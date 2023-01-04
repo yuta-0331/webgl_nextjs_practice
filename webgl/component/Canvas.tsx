@@ -4,11 +4,11 @@ import fragment_shader from '../shader/fragment.glsl';
 import vertex_shader from '../shader/vertex.glsl';
 
 const Canvas = () => {
-    let gl,
-        program,
-        objectVertexBuffer,
-        objectIndexBuffer,
-        indices;
+    let gl: WebGL2RenderingContext,
+        program: WebGLProgram | null,
+        objectVertexBuffer: WebGLBuffer | null,
+        objectIndexBuffer: WebGLBuffer | null,
+        indices: Array<number>;
         // cameraMatrix = mat4.create(),
         // modelViewMatrix = mat4.create(),
         // projectionMatrix = mat4.create(),
@@ -16,23 +16,23 @@ const Canvas = () => {
 
     const canvasRef = useRef(null);
     const getContext = () => {
-        const canvas = canvasRef.current;
+        const canvas = canvasRef.current as unknown as HTMLCanvasElement;
         return canvas.getContext('webgl2')
     };
 
     //shaderの設定
     const initShader = () => {
         //vertex shader
-        const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+        const vertexShader = gl.createShader(gl.VERTEX_SHADER) as WebGLShader;
         gl.shaderSource(vertexShader, vertex_shader);
         gl.compileShader(vertexShader);
         //fragment shader
-        const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+        const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER) as WebGLShader;
         gl.shaderSource(fragmentShader, fragment_shader);
         gl.compileShader(fragmentShader);
 
         //program
-        program = gl.createProgram();
+        program = gl.createProgram() as WebGLProgram;
         gl.attachShader(program, vertexShader);
         gl.attachShader(program, fragmentShader);
         gl.linkProgram(program);
