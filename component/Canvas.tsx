@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { mat4 } from 'gl-matrix';
+import * as gltf from 'webgl-gltf';
 import fragment_shader from '../shader/fragment.glsl';
 import vertex_shader from '../shader/vertex.glsl';
 
@@ -43,8 +44,8 @@ const Canvas = () => {
         }
         gl.useProgram(program);
         (program as any).aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
-        program.uProjectionMatrix = gl.getUniformLocation(program, 'uProjectionMatrix');
-        program.uModelViewMatrix = gl.getUniformLocation(program, 'uModelViewMatrix');
+        (program as any).uProjectionMatrix = gl.getUniformLocation(program, 'uProjectionMatrix');
+        (program as any).uModelViewMatrix = gl.getUniformLocation(program, 'uModelViewMatrix');
     }
     //ジオメトリ作成
     const initBuffer = () => {
@@ -99,11 +100,12 @@ const Canvas = () => {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
+        //setup camera
         mat4.perspective(projectionMatrix, 45, gl.canvas.width / gl.canvas.height, 0.1, 10000);
         mat4.identity(modelViewMatrix);
         mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -5]);
-        gl.uniformMatrix4fv(program.uProjectionMatrix, false, projectionMatrix);
-        gl.uniformMatrix4fv(program.uModelViewMatrix, false, modelViewMatrix);
+        gl.uniformMatrix4fv((program as any).uProjectionMatrix, false, projectionMatrix);
+        gl.uniformMatrix4fv((program as any).uModelViewMatrix, false, modelViewMatrix);
 
         //bind VAO, IBO
         gl.bindVertexArray(geometryVAO);
