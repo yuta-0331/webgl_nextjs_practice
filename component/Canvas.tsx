@@ -74,6 +74,72 @@ const Canvas = () => {
         gl.uniform4fv((program as any).uMaterialAmbient, materialAmbient);
         gl.uniform1f((program as any).uShininess, shininess);
     }
+
+    function calculateNormals(vs, ind) {
+        const
+            x = 0,
+            y = 1,
+            z = 2,
+            ns = [];
+
+        // For each vertex, initialize normal x, normal y, normal z
+        for (let i = 0; i < vs.length; i += 3) {
+            ns[i + x] = 0.0;
+            ns[i + y] = 0.0;
+            ns[i + z] = 0.0;
+        }
+
+        // We work on triads of vertices to calculate
+        for (let i = 0; i < ind.length; i += 3) {
+            // Normals so i = i+3 (i = indices index)
+            const v1 = [], v2 = [], normal = [];
+
+            // p2 - p1
+            v1[x] = vs[3 * ind[i + 2] + x] - vs[3 * ind[i + 1] + x];
+            v1[y] = vs[3 * ind[i + 2] + y] - vs[3 * ind[i + 1] + y];
+            v1[z] = vs[3 * ind[i + 2] + z] - vs[3 * ind[i + 1] + z];
+
+            // p0 - p1
+            v2[x] = vs[3 * ind[i] + x] - vs[3 * ind[i + 1] + x];
+            v2[y] = vs[3 * ind[i] + y] - vs[3 * ind[i + 1] + y];
+            v2[z] = vs[3 * ind[i] + z] - vs[3 * ind[i + 1] + z];
+
+            // Cross product by Sarrus Rule
+            normal[x] = v1[y] * v2[z] - v1[z] * v2[y];
+            normal[y] = v1[z] * v2[x] - v1[x] * v2[z];
+            normal[z] = v1[x] * v2[y] - v1[y] * v2[x];
+
+            // Update the normals of that triangle: sum of vectors
+            for (let j = 0; j < 3; j++) {
+                ns[3 * ind[i + j] + x] = ns[3 * ind[i + j] + x] + normal[x];
+                ns[3 * ind[i + j] + y] = ns[3 * ind[i + j] + y] + normal[y];
+                ns[3 * ind[i + j] + z] = ns[3 * ind[i + j] + z] + normal[z];
+            }
+        }
+
+        // Normalize the result.
+        // The increment here is because each vertex occurs.
+        for (let i = 0; i < vs.length; i += 3) {
+            // With an offset of 3 in the array (due to x, y, z contiguous values)
+            const nn = [];
+            nn[x] = ns[i + x];
+            nn[y] = ns[i + y];
+            nn[z] = ns[i + z];
+
+            let len = Math.sqrt((nn[x] * nn[x]) + (nn[y] * nn[y]) + (nn[z] * nn[z]));
+            if (len === 0) len = 1.0;
+
+            nn[x] = nn[x] / len;
+            nn[y] = nn[y] / len;
+            nn[z] = nn[z] / len;
+
+            ns[i + x] = nn[x];
+            ns[i + y] = nn[y];
+            ns[i + z] = nn[z];
+        }
+
+        return ns;
+    }
     //ジオメトリ作成
     function initBuffer() {
         const vertices = [
@@ -102,7 +168,7 @@ const Canvas = () => {
             0, 9, 10,
             0, 10, 1
         ];
-
+        const normals = calculateNormals(vertices, indices);
         //VAO
         geometryVAO = gl.createVertexArray();
         gl.bindVertexArray(geometryVAO);
@@ -113,6 +179,12 @@ const Canvas = () => {
         //draw内で使用する為、VAOの命令を実行
         gl.enableVertexAttribArray((program as any).aVertexPosition);
         gl.vertexAttribPointer((program as any).aVertexPosition, 3, gl.FLOAT, false, 0, 0);
+        //normals
+        const geometryNormalsBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, geometryNormalsBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+        gl.enableVertexAttribArray((program as any).aVertexNormal);
+        gl.vertexAttribPointer((program as any).aVertexNormal, 3, gl.FLOAT, false, 0, 0);
         //IBO
         geometryIndexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, geometryIndexBuffer);
@@ -133,6 +205,14 @@ const Canvas = () => {
         mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -5]);
         gl.uniformMatrix4fv((program as any).uProjectionMatrix, false, projectionMatrix);
         gl.uniformMatrix4fv((program as any).uModelViewMatrix, false, modelViewMatrix);
+
+        mat4.copy(normalMatrix, modelViewMatrix);
+        mat4.invert(normalMatrix, normalMatrix);
+        mat4.transpose(normalMatrix, normalMatrix);
+
+        gl.uniformMatrix4fv((program as any).uNormalMatrix, false, normalMatrix);
+        gl.uniformMatrix4fv((program as any).uModelViewMatrix, false, modelViewMatrix);
+        gl.uniformMatrix4fv((program as any).uProjectionMatrix, false, projectionMatrix);
 
         //bind VAO, IBO
         gl.bindVertexArray(geometryVAO);
