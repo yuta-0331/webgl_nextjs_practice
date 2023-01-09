@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import { mat4 } from 'gl-matrix';
-import * as gltf from 'webgl-gltf';
 import fragment_shader from '../shader/fragment.glsl';
 import vertex_shader from '../shader/vertex.glsl';
 
@@ -11,6 +10,14 @@ const Canvas = () => {
         geometryIndexBuffer: WebGLBuffer | null,
         geometryVAO: WebGLVertexArrayObject | null,
         indices: Array<number>,
+        shininess = 10,
+        lightColor = [1, 1, 1, 1],
+        lightAmbient = [0.03, 0.03, 0.03, 1],
+        lightSpecular = [1, 1, 1, 1],
+        lightDirection = [-0.25, -0.25, -0.25],
+        materialDiffuse = [46 / 256, 99 / 256, 191 / 256, 1],
+        materialAmbient = [1, 1, 1, 1],
+        materialSpecular = [1, 1, 1, 1],
         cameraMatrix = mat4.create(),
         modelViewMatrix = mat4.create(),
         projectionMatrix = mat4.create(),
@@ -23,7 +30,7 @@ const Canvas = () => {
     };
 
     //shaderの設定
-    const initShader = () => {
+    function initShader() {
         //vertex shader
         const vertexShader = gl.createShader(gl.VERTEX_SHADER) as WebGLShader;
         gl.shaderSource(vertexShader, vertex_shader);
@@ -44,11 +51,31 @@ const Canvas = () => {
         }
         gl.useProgram(program);
         (program as any).aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
+        (program as any).aVertexNormal = gl.getAttribLocation(program, 'aVertexNormal');
         (program as any).uProjectionMatrix = gl.getUniformLocation(program, 'uProjectionMatrix');
         (program as any).uModelViewMatrix = gl.getUniformLocation(program, 'uModelViewMatrix');
+        (program as any).uShininess = gl.getUniformLocation(program,'uShininess');
+        (program as any).uNormalMatrix = gl.getUniformLocation(program, 'uNormalMatrix');
+        (program as any).uMaterialAmbient = gl.getUniformLocation(program, 'uMaterialAmbient');
+        (program as any).uMaterialDiffuse = gl.getUniformLocation(program, 'uMaterialDiffuse');
+        (program as any).uMaterialSpecular = gl.getUniformLocation(program,'uMaterialSpecular');
+        (program as any).uLightDirection = gl.getUniformLocation(program, 'uLightDirection');
+        (program as any).uLightAmbient = gl.getUniformLocation(program, 'uLightAmbient');
+        (program as any).uLightDiffuse = gl.getUniformLocation(program, 'uLightDiffuse');
+        (program as any).uLightSpecular = gl.getUniformLocation(program, 'uLightSpecular');
+    }
+    function initLight() {
+        gl.uniform4fv((program as any).uLightDiffuse, lightColor);
+        gl.uniform4fv((program as any).uLightAmbient, lightAmbient);
+        gl.uniform4fv((program as any).uLightSpecular, lightSpecular);
+        gl.uniform3fv((program as any).uLightDirection, lightDirection);
+        gl.uniform4fv((program as any).uMaterialDiffuse, materialDiffuse);
+        gl.uniform4fv((program as any).uMaterialSpecular, materialSpecular);
+        gl.uniform4fv((program as any).uMaterialAmbient, materialAmbient);
+        gl.uniform1f((program as any).uShininess, shininess);
     }
     //ジオメトリ作成
-    const initBuffer = () => {
+    function initBuffer() {
         const vertices = [
             1.5, 0, 0,
             -1.5, 1, 0,
@@ -96,7 +123,7 @@ const Canvas = () => {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
     }
     //描写
-    const draw = () => {
+    function draw() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
@@ -118,7 +145,7 @@ const Canvas = () => {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
     }
 
-    const configure = () => {
+    function configure() {
         gl = getContext() as WebGL2RenderingContext;
         gl.clearColor(0.9, 0.9, 0.9, 1);
         gl.clearDepth(100);
@@ -127,6 +154,7 @@ const Canvas = () => {
 
         initShader();
         initBuffer();
+        initLight();
         draw();
     }
 
