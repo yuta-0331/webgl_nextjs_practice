@@ -253,5 +253,9 @@ if __name__ == '__main__':
    hasMaterials = parseMaterials(sys.argv[2])
    parseGeometry(FILE, hasMaterials)
    dir = os.path.dirname(FILE)
-   os.chdir(dir)
+   # $ ptyhon obj-parser.py data/model.obj data/model.mtl
+   # のように、モデル等のファイルが parser がある場所のサブディレクトリにあるようであれば
+   # そのサブディレクトリに移動してからファイルを書き出す。
+   if dir != '':
+       os.chdir(dir)
    createWebGLFile()
