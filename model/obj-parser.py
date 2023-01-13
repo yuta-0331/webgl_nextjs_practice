@@ -17,7 +17,7 @@ FILE = ''
 def createWebGLFile():
     mf = open('manifest.txt','w')
     mf.write('original OBJ file: ' + FILE +'\n')
-    print '\n=== WebGL Output ==='
+    print('\n=== WebGL Output ===')
     partNumber = 1
     
     nor = OBJECTS['normals']
@@ -35,7 +35,7 @@ def createWebGLFile():
     
         
         if len(allIndicesForObject) == 0:
-            print 'Warning: the object ' + obj + ' will not generate a JSON file as it has no groups'
+            print('Warning: the object ' + obj + ' will not generate a JSON file as it has no groups')
             continue
         minIndex = min(allIndicesForObject)                                 # can be reindexed (starting on zero per group) for WebGL
         
@@ -48,7 +48,7 @@ def createWebGLFile():
             numVertices = len(ver)
             numIndNormals = len(normals_idx)
             
-            print 'Writing file part'+ str(partNumber)+'.json > [ alias: '+grp+' vertices:' + str(numVertices/3) + ', indices: ' + str(numIndices) +']'
+            print('Writing file part'+ str(partNumber)+'.json > [ alias: '+grp+' vertices:' + str(numVertices/3) + ', indices: ' + str(numIndices) +']')
             mf.write('part'+ str(partNumber)+'.json > alias: '+grp+'\n')
             f = open('part'+str(partNumber)+'.json','w')
             
@@ -78,7 +78,7 @@ def createWebGLFile():
             useMat = OBJECTS[obj]['group'][grp]['material']     # MATERIALS 
             #print ' group ' +grp+' uses mat = ' + useMat
             if useMat == '(null)' or len(useMat) == 0:
-                print 'warning: the group '+grp+' does not have materials'
+                print('warning: the group '+grp+' does not have materials')
                 continue
             mat = MATERIALS[useMat]
             numKeys = len(mat)
@@ -112,7 +112,7 @@ def createWebGLFile():
     mf.close();
     
 def parseGeometry(file, hasMaterials):    
-    print '\n=== Geometry ==='    
+    print ('\n=== Geometry ===')    
     LOC_NOWHERE = 0    
     LOC_OBJECT = 1
     LOC_GROUP = 2
@@ -144,7 +144,7 @@ def parseGeometry(file, hasMaterials):
                     else:
                         MATERIAL_NAME = 'undefined'
                     OBJECTS[OBJECT_NAME]['group'][GROUP_NAME]['material'] = MATERIAL_NAME
-                    print '\tMaterial: '+MATERIAL_NAME
+                    print('\tMaterial: '+MATERIAL_NAME)
             
             elif line.startswith('o '):                                       #Processing an new object
                 OBJECT_NAME = line.split()[1]
@@ -157,7 +157,7 @@ def parseGeometry(file, hasMaterials):
                 vertices = OBJECTS[OBJECT_NAME]['vertices']             #aliasing
                 normals = OBJECTS['normals']               #aliasing
                 
-                print '\nObject: ' + OBJECT_NAME
+                print('\nObject: ' + OBJECT_NAME)
                 
 
             
@@ -170,7 +170,7 @@ def parseGeometry(file, hasMaterials):
                 OBJECTS[OBJECT_NAME]['group'][GROUP_NAME]['normals_idx']    = []
                 indices     = OBJECTS[OBJECT_NAME]['group'][GROUP_NAME]['indices']          #aliasing so we can store here
                 normals_idx = OBJECTS[OBJECT_NAME]['group'][GROUP_NAME]['normals_idx']    #aliasing so we can store here
-                print '\tGroup: ' + GROUP_NAME
+                print('\tGroup: ' + GROUP_NAME)
 
             
             elif location == LOC_OBJECT:                                    #Add vertices to current object
@@ -200,13 +200,13 @@ def parseGeometry(file, hasMaterials):
                         normals_idx.append(nb)
                         normals_idx.append(nc)
                     else:
-                        print 'faces need to be triangular'
+                        print('faces need to be triangular')
                         raise
             
 
         except:
-            print 'ERROR while processing line:  '+str(nLine)
-            print line
+            print('ERROR while processing line:  '+str(nLine))
+            print(line)
             raise
     #pp = pprint.PrettyPrinter(indent=2, width=300)
     #pp.pprint(OBJECTS)
@@ -214,7 +214,7 @@ def parseGeometry(file, hasMaterials):
 def parseMaterials(file):
     if (len(file) == 0):
         return False
-    print '\n=== Materials ==='
+    print('\n=== Materials ===')
     linenumber = 0;
     currentMaterial = ''
     for line in open(file, 'r').readlines():
@@ -226,7 +226,7 @@ def parseMaterials(file):
                     currentMaterial = words[1]
                 else:
                     currentMaterial = 'undefined'
-                print 'Material: ' + currentMaterial 
+                print('Material: ' + currentMaterial) 
                 MATERIALS[currentMaterial] = {}
             elif line.startswith('illum'):
                 words = line.split()
@@ -239,19 +239,23 @@ def parseMaterials(file):
                 MATERIALS[currentMaterial][words[0]] = [float(words[1]), float(words[2]), float(words[3])]
             continue
         except:
-            print 'Error while processing line '+str(linenumber)
-            print line
+            print('Error while processing line '+str(linenumber))
+            print(line)
             raise
     return True
    
 
 if __name__ == '__main__':
    if (len(sys.argv) == 1):
-        print 'ERROR -- Use like this: obj_parser.py objfile.obj mtlfile.mtl'
+        print('ERROR -- Use like this: obj_parser.py objfile.obj mtlfile.mtl')
         sys.exit(0)
    FILE = sys.argv[1]     
    hasMaterials = parseMaterials(sys.argv[2])
    parseGeometry(FILE, hasMaterials)
    dir = os.path.dirname(FILE)
-   os.chdir(dir)
+   # $ ptyhon obj-parser.py data/model.obj data/model.mtl
+   # のように、モデル等のファイルが parser がある場所のサブディレクトリにあるようであれば
+   # そのサブディレクトリに移動してからファイルを書き出す。
+   if dir != '':
+       os.chdir(dir)
    createWebGLFile()
