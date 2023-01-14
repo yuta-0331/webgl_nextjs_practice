@@ -2,23 +2,9 @@ import { useEffect, useRef } from "react";
 import { mat4 } from 'gl-matrix';
 import fragment_shader from '../shader/fragment.glsl';
 import vertex_shader from '../shader/vertex.glsl';
-import calculateNormals from "../lib/calculateNormals";
+import utils from "../lib/Utils";
+import {Program} from "../type";
 
-interface Program extends WebGLProgram {
-    aVertexPosition: number;
-    aVertexNormal: number;
-    uProjectionMatrix: WebGLUniformLocation | null;
-    uModelViewMatrix: WebGLUniformLocation | null;
-    uShininess: WebGLUniformLocation | null;
-    uNormalMatrix: WebGLUniformLocation | null;
-    uMaterialAmbient: WebGLUniformLocation | null;
-    uMaterialDiffuse: WebGLUniformLocation | null;
-    uMaterialSpecular: WebGLUniformLocation | null;
-    uLightDirection: WebGLUniformLocation | null;
-    uLightAmbient: WebGLUniformLocation | null;
-    uLightDiffuse: WebGLUniformLocation | null;
-    uLightSpecular: WebGLUniformLocation | null;
-}
 
 const Canvas = () => {
     let gl: WebGL2RenderingContext,
@@ -120,7 +106,7 @@ const Canvas = () => {
             0, 9, 10,
             0, 10, 1
         ];
-        const normals = calculateNormals(vertices, indices);
+        const normals = utils(vertices, indices);
         //VAO
         geometryVAO = gl.createVertexArray();
         gl.bindVertexArray(geometryVAO);

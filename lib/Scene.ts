@@ -1,3 +1,7 @@
+import { Program } from "../type";
+import { Utils } from "./Utils";
+import { Texture } from "./Texture";
+
 type Object = {
     diffuse: Array<number>;
     Kd: Array<number>;
@@ -13,16 +17,18 @@ type Object = {
     ibo: WebGLBuffer | null;
     indices: Array<number>;
     vao: WebGLVertexArrayObject | null;
-}
-interface Program extends WebGLProgram {
-    aVertexPosition: number
+    vertices: Array<number>;
+    scalars: number;
+    textureCoords: number;
+    image: any;
+    texture: any;
 }
 
 export class Scene {
     constructor(
         private gl: WebGL2RenderingContext,
         private program: Program,
-        private objects: []
+        private objects: Array<Object>
     ) {
         this.gl = gl;
         this.program = program;
@@ -58,7 +64,7 @@ export class Scene {
         //attributeが与えられている場合はマージする。
         Object.assign(object, attributes);
 
-        //create & bind IBO
+        //IBO
         object.ibo = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, object.ibo);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(object.indices), gl.STATIC_DRAW)
@@ -67,7 +73,66 @@ export class Scene {
         object.vao = gl.createVertexArray();
         gl.bindVertexArray(object.vao);
 
-        //positions
-        if (program.aVertexPosition >= 0)
-            }
+        //VBO
+        if (program.aVertexPosition >= 0) {
+            const vertexBufferObject: WebGLBuffer | null = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufferObject);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(object.vertices), gl.STATIC_DRAW)
+            gl.enableVertexAttribArray(program.aVertexPosition);
+            gl.vertexAttribPointer(program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
+        }
+
+        //Normals
+        if (program.aVertexNormal >= 0) {
+            const normalBufferObject: WebGLBuffer | null = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, normalBufferObject);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(
+                new Utils().calculateNormals(object.vertices, object.indices)
+            ), gl.STATIC_DRAW);
+            gl.enableVertexAttribArray(program.aVertexNormal);
+            gl.vertexAttribPointer(program.aVertexNormal, 3, gl.FLOAT, false, 0, 0);
+        }
+
+        //color scalars
+        if (object.scalars && program.aVertexColor >= 0) {
+            const colorBufferObject: WebGLBuffer | null = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, colorBufferObject);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(object.scalars), gl.STATIC_DRAW);
+            gl.enableVertexAttribArray(program.aVertexColor);
+            gl.vertexAttribPointer(program.aVertexColor, 4, gl.FLOAT, false, 0, 0);
+        }
+
+        //textures coordinates
+        if (object.textureCoords && program.aVertexTextureCoords >= 0) {
+            const textureBufferObject: WebGLBuffer | null = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, textureBufferObject);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(object.textureCoords), gl.STATIC_DRAW);
+            gl.enableVertexAttribArray(program.aVertexTextureCoords);
+            gl.vertexAttribPointer(program.aVertexTextureCoords, 2, gl.FLOAT, false, 0, 0);
+        }
+
+        //tangents
+        if (program.aVertexTangent >= 0) {
+            const tangentBufferObject: WebGLBuffer | null = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, tangentBufferObject);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(
+                new Utils().calculateTangents(object.vertices, object.textureCoords, object.indices)
+            ), gl.STATIC_DRAW
+            );
+            gl.enableVertexAttribArray(program.aVertexTangent);
+            gl.vertexAttribPointer(program.aVertexTangent, 3, gl.FLOAT, false, 0, 0);
+        }
+
+        //image texture
+        if (object.image) {
+            object.texture = new Texture(gl, object.image)
+        }
+        //objectsリストにプッシュする
+        this.objects.push(object);
+
+        //clean
+        gl.bindVertexArray(null);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+    }
 }
