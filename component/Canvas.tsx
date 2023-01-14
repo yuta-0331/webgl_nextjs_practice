@@ -4,9 +4,25 @@ import fragment_shader from '../shader/fragment.glsl';
 import vertex_shader from '../shader/vertex.glsl';
 import calculateNormals from "../lib/calculateNormals";
 
+interface Program extends WebGLProgram {
+    aVertexPosition: number;
+    aVertexNormal: number;
+    uProjectionMatrix: WebGLUniformLocation | null;
+    uModelViewMatrix: WebGLUniformLocation | null;
+    uShininess: WebGLUniformLocation | null;
+    uNormalMatrix: WebGLUniformLocation | null;
+    uMaterialAmbient: WebGLUniformLocation | null;
+    uMaterialDiffuse: WebGLUniformLocation | null;
+    uMaterialSpecular: WebGLUniformLocation | null;
+    uLightDirection: WebGLUniformLocation | null;
+    uLightAmbient: WebGLUniformLocation | null;
+    uLightDiffuse: WebGLUniformLocation | null;
+    uLightSpecular: WebGLUniformLocation | null;
+}
+
 const Canvas = () => {
     let gl: WebGL2RenderingContext,
-        program: WebGLProgram,
+        program: Program,
         geometryVertexBuffer: WebGLBuffer | null,
         geometryIndexBuffer: WebGLBuffer | null,
         geometryVAO: WebGLVertexArrayObject | null,
@@ -25,10 +41,10 @@ const Canvas = () => {
         normalMatrix = mat4.create();
 
     const canvasRef = useRef(null);
-    const getContext = () => {
+    function getContext() {
         const canvas = canvasRef.current as unknown as HTMLCanvasElement;
         return canvas.getContext('webgl2');
-    };
+    }
 
     //shaderの設定
     function initShader() {
@@ -42,7 +58,7 @@ const Canvas = () => {
         gl.compileShader(fragmentShader);
 
         //program
-        program = gl.createProgram() as WebGLProgram;
+        program = gl.createProgram() as Program;
         gl.attachShader(program, vertexShader);
         gl.attachShader(program, fragmentShader);
         gl.linkProgram(program);
@@ -51,29 +67,29 @@ const Canvas = () => {
             console.error('Could not initialize shader');
         }
         gl.useProgram(program);
-        (program as any).aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
-        (program as any).aVertexNormal = gl.getAttribLocation(program, 'aVertexNormal');
-        (program as any).uProjectionMatrix = gl.getUniformLocation(program, 'uProjectionMatrix');
-        (program as any).uModelViewMatrix = gl.getUniformLocation(program, 'uModelViewMatrix');
-        (program as any).uShininess = gl.getUniformLocation(program,'uShininess');
-        (program as any).uNormalMatrix = gl.getUniformLocation(program, 'uNormalMatrix');
-        (program as any).uMaterialAmbient = gl.getUniformLocation(program, 'uMaterialAmbient');
-        (program as any).uMaterialDiffuse = gl.getUniformLocation(program, 'uMaterialDiffuse');
-        (program as any).uMaterialSpecular = gl.getUniformLocation(program,'uMaterialSpecular');
-        (program as any).uLightDirection = gl.getUniformLocation(program, 'uLightDirection');
-        (program as any).uLightAmbient = gl.getUniformLocation(program, 'uLightAmbient');
-        (program as any).uLightDiffuse = gl.getUniformLocation(program, 'uLightDiffuse');
-        (program as any).uLightSpecular = gl.getUniformLocation(program, 'uLightSpecular');
+        program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
+        program.aVertexNormal = gl.getAttribLocation(program, 'aVertexNormal');
+        program.uProjectionMatrix = gl.getUniformLocation(program, 'uProjectionMatrix');
+        program.uModelViewMatrix = gl.getUniformLocation(program, 'uModelViewMatrix');
+        program.uShininess = gl.getUniformLocation(program,'uShininess');
+        program.uNormalMatrix = gl.getUniformLocation(program, 'uNormalMatrix');
+        program.uMaterialAmbient = gl.getUniformLocation(program, 'uMaterialAmbient');
+        program.uMaterialDiffuse = gl.getUniformLocation(program, 'uMaterialDiffuse');
+        program.uMaterialSpecular = gl.getUniformLocation(program,'uMaterialSpecular');
+        program.uLightDirection = gl.getUniformLocation(program, 'uLightDirection');
+        program.uLightAmbient = gl.getUniformLocation(program, 'uLightAmbient');
+        program.uLightDiffuse = gl.getUniformLocation(program, 'uLightDiffuse');
+        program.uLightSpecular = gl.getUniformLocation(program, 'uLightSpecular');
     }
     function initLight() {
-        gl.uniform4fv((program as any).uLightDiffuse, lightColor);
-        gl.uniform4fv((program as any).uLightAmbient, lightAmbient);
-        gl.uniform4fv((program as any).uLightSpecular, lightSpecular);
-        gl.uniform3fv((program as any).uLightDirection, lightDirection);
-        gl.uniform4fv((program as any).uMaterialDiffuse, materialDiffuse);
-        gl.uniform4fv((program as any).uMaterialSpecular, materialSpecular);
-        gl.uniform4fv((program as any).uMaterialAmbient, materialAmbient);
-        gl.uniform1f((program as any).uShininess, shininess);
+        gl.uniform4fv(program.uLightDiffuse, lightColor);
+        gl.uniform4fv(program.uLightAmbient, lightAmbient);
+        gl.uniform4fv(program.uLightSpecular, lightSpecular);
+        gl.uniform3fv(program.uLightDirection, lightDirection);
+        gl.uniform4fv(program.uMaterialDiffuse, materialDiffuse);
+        gl.uniform4fv(program.uMaterialSpecular, materialSpecular);
+        gl.uniform4fv(program.uMaterialAmbient, materialAmbient);
+        gl.uniform1f(program.uShininess, shininess);
     }
 
     //ジオメトリ作成
@@ -113,14 +129,14 @@ const Canvas = () => {
         gl.bindBuffer(gl.ARRAY_BUFFER, geometryVertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         //draw内で使用する為、VAOの命令を実行
-        gl.enableVertexAttribArray((program as any).aVertexPosition);
-        gl.vertexAttribPointer((program as any).aVertexPosition, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(program.aVertexPosition);
+        gl.vertexAttribPointer(program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
         //normals
         const geometryNormalsBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, geometryNormalsBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
-        gl.enableVertexAttribArray((program as any).aVertexNormal);
-        gl.vertexAttribPointer((program as any).aVertexNormal, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(program.aVertexNormal);
+        gl.vertexAttribPointer(program.aVertexNormal, 3, gl.FLOAT, false, 0, 0);
         //IBO
         geometryIndexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, geometryIndexBuffer);
@@ -139,16 +155,16 @@ const Canvas = () => {
         mat4.perspective(projectionMatrix, 45, gl.canvas.width / gl.canvas.height, 0.1, 10000);
         mat4.identity(modelViewMatrix);
         mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -5]);
-        gl.uniformMatrix4fv((program as any).uProjectionMatrix, false, projectionMatrix);
-        gl.uniformMatrix4fv((program as any).uModelViewMatrix, false, modelViewMatrix);
+        gl.uniformMatrix4fv(program.uProjectionMatrix, false, projectionMatrix);
+        gl.uniformMatrix4fv(program.uModelViewMatrix, false, modelViewMatrix);
 
         mat4.copy(normalMatrix, modelViewMatrix);
         mat4.invert(normalMatrix, normalMatrix);
         mat4.transpose(normalMatrix, normalMatrix);
 
-        gl.uniformMatrix4fv((program as any).uNormalMatrix, false, normalMatrix);
-        gl.uniformMatrix4fv((program as any).uModelViewMatrix, false, modelViewMatrix);
-        gl.uniformMatrix4fv((program as any).uProjectionMatrix, false, projectionMatrix);
+        gl.uniformMatrix4fv(program.uNormalMatrix, false, normalMatrix);
+        gl.uniformMatrix4fv(program.uModelViewMatrix, false, modelViewMatrix);
+        gl.uniformMatrix4fv(program.uProjectionMatrix, false, projectionMatrix);
 
         //bind VAO, IBO
         gl.bindVertexArray(geometryVAO);
