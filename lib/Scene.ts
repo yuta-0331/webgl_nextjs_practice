@@ -25,17 +25,17 @@ type Object = {
 }
 
 export class Scene {
+    private objects: Array<Object>
     constructor(
         private gl: WebGL2RenderingContext,
         private program: ProgramProps,
-        private objects: Array<Object>
     ) {
         this.gl = gl;
         this.program = program;
         this.objects = []
     }
     //非同期でファイルを読み込む
-    private load(filename: string, alias: string, attributes: string) {
+    load(filename: string, alias: string, attributes: string) {
         return fetch(filename)
             .then(res => res.json())
             .then(object => {
@@ -46,7 +46,7 @@ export class Scene {
             .catch((err) => console.error(err));
     };
 
-    private add(object: Object, attributes: string) {
+    add(object: Object, attributes: string) {
         const { gl, program } = this;
         //デフォルト値の設定
         object.diffuse = object.diffuse || [1, 1, 1, 1];

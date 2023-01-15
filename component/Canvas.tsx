@@ -4,10 +4,11 @@ import fragment_shader from '../shader/fragment.glsl';
 import vertex_shader from '../shader/vertex.glsl';
 import { Utils } from "../lib/Utils";
 import { ProgramProps } from "../type";
+import {Program} from "../lib/Program";
 
 const Canvas = () => {
     let gl: WebGL2RenderingContext,
-        program: ProgramProps,
+        program,
         geometryVertexBuffer: WebGLBuffer | null,
         geometryIndexBuffer: WebGLBuffer | null,
         geometryVAO: WebGLVertexArrayObject | null,
@@ -52,31 +53,31 @@ const Canvas = () => {
         ];
 
         // //vertex shader
-        const vertexShader = gl.createShader(gl.VERTEX_SHADER) as WebGLShader;
-        gl.shaderSource(vertexShader, vertex_shader);
-        gl.compileShader(vertexShader);
-        //fragment shader
-        const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER) as WebGLShader;
-        gl.shaderSource(fragmentShader, fragment_shader);
-        gl.compileShader(fragmentShader);
-
-        //program
-        program = gl.createProgram() as ProgramProps;
-        gl.attachShader(program, vertexShader);
-        gl.attachShader(program, fragmentShader);
-        gl.linkProgram(program);
-
-        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-            console.error('Could not initialize shader');
-        }
-        gl.useProgram(program);
-        //attributes, uniformのprogramへの配置を配列で処理
-        attributes.forEach((attribute: string) => {
-            program[attribute as keyof ProgramProps] = gl.getAttribLocation(program, attribute);
-        });
-        uniforms.forEach((uniform: string) => {
-            program[uniform as keyof ProgramProps] = gl.getUniformLocation(program, uniform) as any;
-        });
+        // const vertexShader = gl.createShader(gl.VERTEX_SHADER) as WebGLShader;
+        // gl.shaderSource(vertexShader, vertex_shader);
+        // gl.compileShader(vertexShader);
+        // //fragment shader
+        // const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER) as WebGLShader;
+        // gl.shaderSource(fragmentShader, fragment_shader);
+        // gl.compileShader(fragmentShader);
+        //
+        // //program
+        // program = gl.createProgram() as ProgramProps;
+        // gl.attachShader(program, vertexShader);
+        // gl.attachShader(program, fragmentShader);
+        // gl.linkProgram(program);
+        //
+        // if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        //     console.error('Could not initialize shader');
+        // }
+        // gl.useProgram(program);
+        // //attributes, uniformのprogramへの配置を配列で処理
+        // attributes.forEach((attribute: string) => {
+        //     program[attribute as keyof ProgramProps] = gl.getAttribLocation(program, attribute);
+        // });
+        // uniforms.forEach((uniform: string) => {
+        //     program[uniform as keyof ProgramProps] = gl.getUniformLocation(program, uniform) as any;
+        // });
     }
     function initLight() {
         gl.uniform4fv(program.uLightDiffuse, lightColor);

@@ -1,7 +1,7 @@
 import { ProgramProps } from "../type";
-
+//動作しないので要修正
 export class Program {
-    private readonly program: ProgramProps;
+    program: ProgramProps;
     constructor(
         private gl: WebGL2RenderingContext,
         private vs: string,

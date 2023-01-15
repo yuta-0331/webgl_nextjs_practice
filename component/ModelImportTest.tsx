@@ -2,6 +2,7 @@ import fragment_shader from '../shader/testFrag.glsl';
 import vertex_shader from '../shader/testVer.glsl';
 import { useEffect, useRef } from "react";
 import { ProgramProps } from "../type";
+import {Scene} from "../lib/Scene";
 
 const ModelImportTest = () => {
     let gl: WebGL2RenderingContext,
@@ -74,7 +75,6 @@ const ModelImportTest = () => {
         uniforms.forEach((uniform: string) => {
             program[uniform as keyof ProgramProps] = gl.getUniformLocation(program, uniform) as any;
         });
-
     }
     return (
         <>test</>
