@@ -53,6 +53,5 @@ export class Program {
         uniforms.forEach((uniform: string) => {
             this.program[uniform as keyof ProgramProps] = this.gl.getUniformLocation(this.program, uniform) as any;
         });
-    }
-
+    };
 }

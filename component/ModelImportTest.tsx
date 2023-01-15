@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { ProgramProps } from "../type";
 import {Scene} from "../lib/Scene";
 import {Program} from "../lib/Program";
+import {Clock} from "../lib/Clock";
 
 const ModelImportTest = () => {
     let gl: WebGL2RenderingContext,
@@ -56,6 +57,7 @@ const ModelImportTest = () => {
         ).initProgram(attributes, uniforms);
 
         scene = new Scene(gl, program);
+        clock = new Clock();
     }
     useEffect(() => {
         configure();

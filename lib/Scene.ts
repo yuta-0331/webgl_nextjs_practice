@@ -25,7 +25,7 @@ type Object = {
 }
 
 export class Scene {
-    private objects: Array<Object>
+    objects: Array<Object>
     constructor(
         private gl: WebGL2RenderingContext,
         private program: ProgramProps,
@@ -35,7 +35,7 @@ export class Scene {
         this.objects = []
     }
     //非同期でファイルを読み込む
-    load(filename: string, alias: string, attributes: string) {
+    load(filename: string, alias: string, attributes: string | null = null) {
         return fetch(filename)
             .then(res => res.json())
             .then(object => {
@@ -46,7 +46,14 @@ export class Scene {
             .catch((err) => console.error(err));
     };
 
-    add(object: Object, attributes: string) {
+    loadByParts(path: string, count: number, alias: string) {
+        for (let i = 1; i <= count; i++) {
+            const part = `${path}${i}.json`;
+            this.load(part, alias);
+        }
+    }
+
+    add(object: Object, attributes: string | null = null) {
         const { gl, program } = this;
         //デフォルト値の設定
         object.diffuse = object.diffuse || [1, 1, 1, 1];
@@ -134,5 +141,13 @@ export class Scene {
         gl.bindVertexArray(null);
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+    };
+
+    //シーン内の全アイテムを走査する
+    traverse(callback: Function) {
+        for (let i = 0; i < this.objects.length; i++) {
+            //何らかの値が帰ってきた時点でbreak
+            if(callback(this.objects[i], i) !== undefined) break;
+        }
     }
 }
