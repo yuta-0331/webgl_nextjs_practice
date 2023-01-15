@@ -1,4 +1,4 @@
-import { Program } from "../type";
+import { ProgramProps } from "../type";
 import { Utils } from "./Utils";
 import { Texture } from "./Texture";
 
@@ -13,13 +13,13 @@ type Object = {
     Ns: number;
     d: number;
     transparency: number;
-    illum: number;
+    illumination: number;
     ibo: WebGLBuffer | null;
     indices: Array<number>;
     vao: WebGLVertexArrayObject | null;
     vertices: Array<number>;
     scalars: number;
-    textureCoords: number;
+    textureCoords: Array<number>;
     image: any;
     texture: any;
 }
@@ -27,7 +27,7 @@ type Object = {
 export class Scene {
     constructor(
         private gl: WebGL2RenderingContext,
-        private program: Program,
+        private program: ProgramProps,
         private objects: Array<Object>
     ) {
         this.gl = gl;
@@ -59,7 +59,7 @@ export class Scene {
         object.Ns = object.Ns || object.specularExponent;
         object.d = object.d || 1;
         object.transparency = object.transparency || object.d;
-        object.illum = object.illum || 1;
+        object.illumination = object.illumination || 1;
 
         //attributeが与えられている場合はマージする。
         Object.assign(object, attributes);

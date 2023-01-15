@@ -1,4 +1,4 @@
-export interface Program extends WebGLProgram {
+export interface ProgramProps extends WebGLProgram {
     aVertexPosition: number;
     aVertexNormal: number;
     aVertexColor: number;

@@ -2,13 +2,12 @@ import { useEffect, useRef } from "react";
 import { mat4 } from 'gl-matrix';
 import fragment_shader from '../shader/fragment.glsl';
 import vertex_shader from '../shader/vertex.glsl';
-import utils from "../lib/Utils";
-import {Program} from "../type";
-
+import { Utils } from "../lib/Utils";
+import { ProgramProps } from "../type";
 
 const Canvas = () => {
     let gl: WebGL2RenderingContext,
-        program: Program,
+        program: ProgramProps,
         geometryVertexBuffer: WebGLBuffer | null,
         geometryIndexBuffer: WebGLBuffer | null,
         geometryVAO: WebGLVertexArrayObject | null,
@@ -34,7 +33,25 @@ const Canvas = () => {
 
     //shaderの設定
     function initShader() {
-        //vertex shader
+        const attributes = [
+            'aVertexPosition',
+            'aVertexNormal',
+        ];
+        const uniforms = [
+            'uProjectionMatrix',
+            'uModelViewMatrix',
+            'uShininess',
+            'uNormalMatrix',
+            'uMaterialAmbient',
+            'uMaterialDiffuse',
+            'uMaterialSpecular',
+            'uLightDirection',
+            'uLightAmbient',
+            'uLightDiffuse',
+            'uLightSpecular',
+        ];
+
+        // //vertex shader
         const vertexShader = gl.createShader(gl.VERTEX_SHADER) as WebGLShader;
         gl.shaderSource(vertexShader, vertex_shader);
         gl.compileShader(vertexShader);
@@ -44,7 +61,7 @@ const Canvas = () => {
         gl.compileShader(fragmentShader);
 
         //program
-        program = gl.createProgram() as Program;
+        program = gl.createProgram() as ProgramProps;
         gl.attachShader(program, vertexShader);
         gl.attachShader(program, fragmentShader);
         gl.linkProgram(program);
@@ -53,19 +70,13 @@ const Canvas = () => {
             console.error('Could not initialize shader');
         }
         gl.useProgram(program);
-        program.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
-        program.aVertexNormal = gl.getAttribLocation(program, 'aVertexNormal');
-        program.uProjectionMatrix = gl.getUniformLocation(program, 'uProjectionMatrix');
-        program.uModelViewMatrix = gl.getUniformLocation(program, 'uModelViewMatrix');
-        program.uShininess = gl.getUniformLocation(program,'uShininess');
-        program.uNormalMatrix = gl.getUniformLocation(program, 'uNormalMatrix');
-        program.uMaterialAmbient = gl.getUniformLocation(program, 'uMaterialAmbient');
-        program.uMaterialDiffuse = gl.getUniformLocation(program, 'uMaterialDiffuse');
-        program.uMaterialSpecular = gl.getUniformLocation(program,'uMaterialSpecular');
-        program.uLightDirection = gl.getUniformLocation(program, 'uLightDirection');
-        program.uLightAmbient = gl.getUniformLocation(program, 'uLightAmbient');
-        program.uLightDiffuse = gl.getUniformLocation(program, 'uLightDiffuse');
-        program.uLightSpecular = gl.getUniformLocation(program, 'uLightSpecular');
+        //attributes, uniformのprogramへの配置を配列で処理
+        attributes.forEach((attribute: string) => {
+            program[attribute as keyof ProgramProps] = gl.getAttribLocation(program, attribute);
+        });
+        uniforms.forEach((uniform: string) => {
+            program[uniform as keyof ProgramProps] = gl.getUniformLocation(program, uniform) as any;
+        });
     }
     function initLight() {
         gl.uniform4fv(program.uLightDiffuse, lightColor);
@@ -106,7 +117,7 @@ const Canvas = () => {
             0, 9, 10,
             0, 10, 1
         ];
-        const normals = utils(vertices, indices);
+        const normals = new Utils().calculateNormals(vertices, indices);
         //VAO
         geometryVAO = gl.createVertexArray();
         gl.bindVertexArray(geometryVAO);

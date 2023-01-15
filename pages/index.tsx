@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Canvas from "../component/Canvas";
+import ModelImportTest from "../component/ModelImportTest";
 
 export default function Home() {
     return (
@@ -13,6 +14,7 @@ export default function Home() {
       <main>
         <h1>Hello, Canvas</h1>
         <Canvas />
+        <ModelImportTest/>
       </main>
     </>
   )
