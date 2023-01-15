@@ -8,7 +8,7 @@ import {Program} from "../lib/Program";
 
 const Canvas = () => {
     let gl: WebGL2RenderingContext,
-        program,
+        program: ProgramProps,
         geometryVertexBuffer: WebGLBuffer | null,
         geometryIndexBuffer: WebGLBuffer | null,
         geometryVAO: WebGLVertexArrayObject | null,
@@ -32,8 +32,8 @@ const Canvas = () => {
         return canvas.getContext('webgl2');
     }
 
-    //shaderの設定
-    function initShader() {
+    //shaderとprogramのsetup
+    function initShaderAndProgram() {
         const attributes = [
             'aVertexPosition',
             'aVertexNormal',
@@ -51,33 +51,9 @@ const Canvas = () => {
             'uLightDiffuse',
             'uLightSpecular',
         ];
-
-        // //vertex shader
-        // const vertexShader = gl.createShader(gl.VERTEX_SHADER) as WebGLShader;
-        // gl.shaderSource(vertexShader, vertex_shader);
-        // gl.compileShader(vertexShader);
-        // //fragment shader
-        // const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER) as WebGLShader;
-        // gl.shaderSource(fragmentShader, fragment_shader);
-        // gl.compileShader(fragmentShader);
-        //
-        // //program
-        // program = gl.createProgram() as ProgramProps;
-        // gl.attachShader(program, vertexShader);
-        // gl.attachShader(program, fragmentShader);
-        // gl.linkProgram(program);
-        //
-        // if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        //     console.error('Could not initialize shader');
-        // }
-        // gl.useProgram(program);
-        // //attributes, uniformのprogramへの配置を配列で処理
-        // attributes.forEach((attribute: string) => {
-        //     program[attribute as keyof ProgramProps] = gl.getAttribLocation(program, attribute);
-        // });
-        // uniforms.forEach((uniform: string) => {
-        //     program[uniform as keyof ProgramProps] = gl.getUniformLocation(program, uniform) as any;
-        // });
+        program = new Program(
+            gl, vertex_shader, fragment_shader
+        ).initProgram(attributes, uniforms);
     }
     function initLight() {
         gl.uniform4fv(program.uLightDiffuse, lightColor);
@@ -182,7 +158,7 @@ const Canvas = () => {
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LEQUAL);
 
-        initShader();
+        initShaderAndProgram();
         initBuffer();
         initLight();
         draw();

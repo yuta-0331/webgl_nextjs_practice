@@ -3,6 +3,7 @@ import vertex_shader from '../shader/testVer.glsl';
 import { useEffect, useRef } from "react";
 import { ProgramProps } from "../type";
 import {Scene} from "../lib/Scene";
+import {Program} from "../lib/Program";
 
 const ModelImportTest = () => {
     let gl: WebGL2RenderingContext,
@@ -29,26 +30,6 @@ const ModelImportTest = () => {
         gl.depthFunc(gl.LEQUAL);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-        //vertex shader
-        const vertexShader = gl.createShader(gl.VERTEX_SHADER) as WebGLShader;
-        gl.shaderSource(vertexShader, vertex_shader);
-        gl.compileShader(vertexShader);
-        //fragment shader
-        const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER) as WebGLShader;
-        gl.shaderSource(fragmentShader, fragment_shader);
-        gl.compileShader(fragmentShader);
-
-        //program
-        program = gl.createProgram() as ProgramProps;
-        gl.attachShader(program, vertexShader);
-        gl.attachShader(program, fragmentShader);
-        gl.linkProgram(program);
-
-        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-            console.error('Could not initialize shader');
-        }
-        gl.useProgram(program);
-
         //attribute, uniformのprogramへの配置を配列で処理
         const attributes = [
             'aVertexPosition',
@@ -69,13 +50,11 @@ const ModelImportTest = () => {
             'uNs',
             'uD',
         ];
-        attributes.forEach((attribute: string) => {
-            program[attribute as keyof ProgramProps] = gl.getAttribLocation(program, attribute);
-        });
-        uniforms.forEach((uniform: string) => {
-            program[uniform as keyof ProgramProps] = gl.getUniformLocation(program, uniform) as any;
-        });
+        program = new Program(
+            gl, vertex_shader, fragment_shader
+        ).initProgram(attributes, uniforms);
     }
+
     return (
         <>test</>
     )

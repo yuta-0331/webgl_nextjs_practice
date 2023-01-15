@@ -1,47 +1,59 @@
 import { ProgramProps } from "../type";
-//動作しないので要修正
+
 export class Program {
-    program: ProgramProps;
+    private readonly program: ProgramProps;
     constructor(
         private gl: WebGL2RenderingContext,
-        private vs: string,
-        private fs: string,
+        private readonly vs: string,
+        private readonly fs: string,
     ) {
         this.gl = gl;
         this.program = gl.createProgram() as ProgramProps;
-
-        if (!(vs && fs)) {
-            console.error('shaderが存在しません');
-        }
-        //init vertex shader
+        this.vs = vs;
+        this.fs = fs;
+    };
+    initProgram(attributes: Array<string>, uniforms: Array<string>) {
+        const { gl, vs, fs, program } = this;
+        //vertex shader
         const vertexShader = gl.createShader(gl.VERTEX_SHADER) as WebGLShader;
         gl.shaderSource(vertexShader, vs);
         gl.compileShader(vertexShader);
-        //init fragment shader
+        //fragment shader
         const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER) as WebGLShader;
-        gl.shaderSource(fragmentShader, fs)
+        gl.shaderSource(fragmentShader, fs);
         gl.compileShader(fragmentShader);
         //attach program
-        gl.attachShader(this.program, vertexShader);
-        gl.attachShader(this.program, fragmentShader);
-        gl.linkProgram(this.program);
+        gl.attachShader(program, vertexShader);
+        gl.attachShader(program, fragmentShader);
+        gl.linkProgram(program);
 
-        if (!this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS)) {
-            console.error('shaderを初期化できません');
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            console.error('shaderを初期化できません')
         }
+
         this.useProgram();
+
+        this.load(attributes, uniforms);
+
+        return program;
     };
     useProgram() {
         this.gl.useProgram(this.program);
     };
     load(attributes: Array<string>, uniforms: Array<string>) {
-        this.useProgram();
+        // this.useProgram();
+        this.setAttribLocation(attributes);
+        this.setUniformLocation(uniforms);
+    };
+    setAttribLocation(attributes: Array<string>) {
         attributes.forEach((attribute: string) => {
             this.program[attribute as keyof ProgramProps] = this.gl.getAttribLocation(this.program, attribute);
         });
+    };
+    setUniformLocation(uniforms: Array<string>) {
         uniforms.forEach((uniform: string) => {
             this.program[uniform as keyof ProgramProps] = this.gl.getUniformLocation(this.program, uniform) as any;
         });
-
     }
+
 }
