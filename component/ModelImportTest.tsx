@@ -16,13 +16,14 @@ const ModelImportTest = () => {
         lightPosition,
         clearColor: [number, number, number] = [0.9, 0.9, 0.9];
 
+    //canvasの設定
+    const canvasRef = useRef(null);
+    function getContext() {
+        const canvas = canvasRef.current as unknown as HTMLCanvasElement;
+        return canvas.getContext('webgl2');
+    }
+
     function configure() {
-        //canvasの設定
-        const canvasRef = useRef(null);
-        function getContext() {
-            const canvas = canvasRef.current as unknown as HTMLCanvasElement;
-            return canvas.getContext('webgl2');
-        }
         gl = getContext() as WebGL2RenderingContext;
         gl.clearColor(...clearColor, 1);
         gl.clearDepth(1);
@@ -53,10 +54,16 @@ const ModelImportTest = () => {
         program = new Program(
             gl, vertex_shader, fragment_shader
         ).initProgram(attributes, uniforms);
-    }
 
+        scene = new Scene(gl, program);
+    }
+    useEffect(() => {
+        configure();
+    }, []);
     return (
-        <>test</>
+        <>
+            <canvas className='webgl-canvas' ref={canvasRef}></canvas>
+        </>
     )
 }
 

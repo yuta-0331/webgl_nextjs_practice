@@ -41,7 +41,6 @@ export class Program {
         this.gl.useProgram(this.program);
     };
     load(attributes: Array<string>, uniforms: Array<string>) {
-        // this.useProgram();
         this.setAttribLocation(attributes);
         this.setUniformLocation(uniforms);
     };
