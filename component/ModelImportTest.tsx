@@ -62,7 +62,7 @@ const ModelImportTest = () => {
         scene = new Scene(gl, program);
         clock = new Clock();
         camera = new Camera(Camera.ORBITING_TYPE);
-        new Controls(camera, canvas)
+        new Controls(camera, canvas);
     }
     useEffect(() => {
         configure();
