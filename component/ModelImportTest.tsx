@@ -6,13 +6,15 @@ import {Scene} from "../lib/Scene";
 import {Program} from "../lib/Program";
 import {Clock} from "../lib/Clock";
 import {Camera} from "../lib/Camera";
+import {Controls} from "../lib/Controls";
 
 const ModelImportTest = () => {
-    let gl: WebGL2RenderingContext,
+    let canvas: HTMLCanvasElement,
+        gl: WebGL2RenderingContext,
         program: ProgramProps,
-        scene,
-        clock,
-        camera,
+        scene: Scene,
+        clock: Clock,
+        camera: Camera,
         transform,
         lights,
         lightPosition,
@@ -21,7 +23,7 @@ const ModelImportTest = () => {
     //canvasの設定
     const canvasRef = useRef(null);
     function getContext() {
-        const canvas = canvasRef.current as unknown as HTMLCanvasElement;
+        canvas = canvasRef.current as unknown as HTMLCanvasElement;
         return canvas.getContext('webgl2');
     }
 
@@ -60,6 +62,7 @@ const ModelImportTest = () => {
         scene = new Scene(gl, program);
         clock = new Clock();
         camera = new Camera(Camera.ORBITING_TYPE);
+        new Controls(camera, canvas)
     }
     useEffect(() => {
         configure();

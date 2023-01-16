@@ -6,7 +6,7 @@ type CameraType = {
 }
 
 export class Camera {
-    private readonly position: vec3;
+    readonly position: vec3;
     private readonly focus: vec3;
     private home: vec3;
     private readonly up: vec3;
