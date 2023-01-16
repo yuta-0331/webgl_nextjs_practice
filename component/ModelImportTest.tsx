@@ -5,6 +5,7 @@ import { ProgramProps } from "../type";
 import {Scene} from "../lib/Scene";
 import {Program} from "../lib/Program";
 import {Clock} from "../lib/Clock";
+import {Camera} from "../lib/Camera";
 
 const ModelImportTest = () => {
     let gl: WebGL2RenderingContext,
@@ -58,6 +59,7 @@ const ModelImportTest = () => {
 
         scene = new Scene(gl, program);
         clock = new Clock();
+        camera = new Camera(Camera.ORBITING_TYPE);
     }
     useEffect(() => {
         configure();
