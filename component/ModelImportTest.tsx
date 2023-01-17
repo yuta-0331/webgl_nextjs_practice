@@ -130,10 +130,57 @@ const ModelImportTest = () => {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         transforms.updatePerspective();
 
+        try {
+            scene.traverse(object => {
+                if (!object.visible) return;
+
+                transforms.calculateModelView();
+                transforms.push();
+                transforms.setMatrixUniforms();
+                transforms.pop();
+
+                //set uniforms
+                gl.uniform1i(program.uWireframe, false);
+                gl.uniform3fv(program.uKa, object.Ka);
+                gl.uniform3fv(program.uKd, object.Kd);
+                gl.uniform3fv(program.uKs, object.Ks);
+                gl.uniform1f(program.uNi, object.Ni);
+                gl.uniform1f(program.uNs, object.Ns);
+                gl.uniform1f(program.uD, object.d);
+
+                //bind
+                gl.bindVertexArray(object.vao);
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, object.ibo);
+
+                if (object.wireframe) {
+                    gl.uniform1f(program.uWireframe, 1);
+                    gl.drawElements(gl.LINES, object.indices.length, gl.UNSIGNED_SHORT, 0);
+                } else {
+                    gl.uniform1f(program.uWireframe, 0);
+                    gl.drawElements(gl.TRIANGLES, object.indices.length, gl.UNSIGNED_SHORT, 0)
+                }
+                //clean
+                gl.bindVertexArray(null);
+                gl.bindBuffer(gl.ARRAY_BUFFER, null);
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function init() {
+        configure();
+        load();
+        clock.on('tick', draw);
+    }
+
+    function initControls() {
 
     }
+
     useEffect(() => {
-        configure();
+        init();
     }, []);
     return (
         <>

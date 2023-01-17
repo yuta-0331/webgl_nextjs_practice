@@ -18,6 +18,7 @@ export interface ProgramProps extends WebGLProgram {
     uLightDiffuse: WebGLUniformLocation | null;
     uLightSpecular: WebGLUniformLocation | null;
     uLightPosition: WebGLUniformLocation | null;
+    uWireframe: WebGLUniformLocation | null;
     uLd: WebGLUniformLocation | null;
     uLs: WebGLUniformLocation | null;
     uKa: WebGLUniformLocation | null;
@@ -26,6 +27,7 @@ export interface ProgramProps extends WebGLProgram {
     uKs: WebGLUniformLocation | null;
     uNs: WebGLUniformLocation | null;
     uNi: WebGLUniformLocation | null;
+    uD: WebGLUniformLocation | null;
 }
 
 export type LightPositions = {

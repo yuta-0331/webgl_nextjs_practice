@@ -3,7 +3,8 @@ export class EventEmitter {
     constructor() {
         this.events = {};
     }
-    on(event: string, callback: string) {
+
+    on(event: string, callback: () => void) {
         if (!this.events[event]) {
             this.events[event] = [];
         }
