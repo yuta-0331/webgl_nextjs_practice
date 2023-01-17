@@ -53,7 +53,7 @@ export class Camera {
     //カメラタイプの変更
     setType(type: string) {
         //Camera.TYPEにtypeが存在するかどうか
-        ~Camera.TYPE.indexOf(type)
+        ~Camera.TYPES.indexOf(type)
         ? this.type = type
         : console.error(`${type}はサポートされていません`)
     };
