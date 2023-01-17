@@ -16,9 +16,9 @@ export class Camera {
     private steps: number;
     private azimuth: number;
     private elevation: number;
-    private fov: number;
-    private minZ: number;
-    private maxZ: number;
+    fov: number;
+    minZ: number;
+    maxZ: number;
     private type: string | undefined;
     static ORBITING_TYPE: string;
     static TRACKING_TYPE: string;
