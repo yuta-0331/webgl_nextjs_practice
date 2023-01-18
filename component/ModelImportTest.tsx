@@ -87,10 +87,10 @@ const ModelImportTest = ({modelObj}) => {
             light.setSpecular([0.8, 0.8, 0.8, 1]);
             lights.add(light);
         });
-
-        gl.uniform3fv(program.uLightPosition, lights.getArray('position'));
-        gl.uniform3fv(program.uLd, lights.getArray('diffuse'));
-        gl.uniform3fv(program.uLs, lights.getArray('specular'));
+        //lightの設定を自動的に変更できるように修正すること
+        gl.uniform3fv(program.uLightPosition, [1,1,1]);
+        gl.uniform3fv(program.uLd, [1,1,1]);
+        gl.uniform3fv(program.uLs, [1,1,1]);
 
         gl.uniform3fv(program.uKa, [1, 1, 1]);
         gl.uniform3fv(program.uKd, [1, 1, 1]);
@@ -182,7 +182,11 @@ const ModelImportTest = ({modelObj}) => {
 
     return (
         <>
-            <canvas className='webgl-canvas' ref={canvasRef}></canvas>
+            <canvas className='webgl-canvas'
+                    ref={canvasRef}
+                    width={1200}
+                    height={600}
+            ></canvas>
         </>
     );
 };

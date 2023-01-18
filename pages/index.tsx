@@ -15,8 +15,7 @@ export default function(props) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <h1>Hello, Canvas</h1>
-        <Canvas />
+        <h1>Hello Canvas</h1>
         <ModelImportTest modelObj={props}/>
       </main>
     </>
@@ -26,8 +25,8 @@ export default function(props) {
 const modelData: ModelDataType = {
   'macbook': {
     paintAlias: 'macbook',
-    partsCount: 6,
-    modelPath: '/model/macbook/part'
+    partsCount: 68,
+    modelPath: '/model/room/part'
   },
 };
 export const getStaticProps = async () =>{
