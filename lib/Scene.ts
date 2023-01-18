@@ -1,28 +1,7 @@
-import { ProgramProps } from "../type";
+import { LightPropType, ProgramProps } from "../type";
 import { Utils } from "./Utils";
 import { Texture } from "./Texture";
 
-type Object = {
-    diffuse: Array<number>;
-    Kd: Array<number>;
-    ambient: Array<number>;
-    Ka: Array<number>;
-    specular: Array<number>;
-    Ks: Array<number>;
-    specularExponent: number;
-    Ns: number;
-    d: number;
-    transparency: number;
-    illumination: number;
-    ibo: WebGLBuffer | null;
-    indices: Array<number>;
-    vao: WebGLVertexArrayObject | null;
-    vertices: Array<number>;
-    scalars: number;
-    textureCoords: Array<number>;
-    image: any;
-    texture: any;
-}
 
 export class Scene {
     objects: Array<Object>
@@ -53,7 +32,7 @@ export class Scene {
         }
     }
 
-    add(object: Object, attributes: string | null = null) {
+    add(object: LightPropType, attributes: string | null = null) {
         const { gl, program } = this;
         //デフォルト値の設定
         object.diffuse = object.diffuse || [1, 1, 1, 1];
@@ -66,7 +45,7 @@ export class Scene {
         object.Ns = object.Ns || object.specularExponent;
         object.d = object.d || 1;
         object.transparency = object.transparency || object.d;
-        object.illumination = object.illumination || 1;
+        object.illum = object.illum || 1;
 
         //attributeが与えられている場合はマージする。
         Object.assign(object, attributes);

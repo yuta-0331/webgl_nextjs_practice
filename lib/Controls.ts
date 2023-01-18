@@ -8,7 +8,7 @@ export class Controls {
     private dragging: boolean;
     private picking: boolean;
     private ctrl: boolean;
-    private alt: boolean;
+    alt: boolean;
     private x: number;
     private y: number;
     private lastX: number;

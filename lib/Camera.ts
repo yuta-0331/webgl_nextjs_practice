@@ -9,9 +9,9 @@ export class Camera {
     readonly position: vec3;
     private readonly focus: vec3;
     private home: vec3;
-    private readonly up: vec3;
-    private readonly right: vec3;
-    private readonly normal: vec3;
+    readonly up: vec3;
+    readonly right: vec3;
+    readonly normal: vec3;
     private readonly matrix: mat4;
     private steps: number;
     private azimuth: number;

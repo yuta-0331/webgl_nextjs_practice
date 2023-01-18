@@ -5,7 +5,7 @@ export class Light {
     private ambient: vec4;
     private diffuse: vec4;
     private specular: vec4;
-    constructor(private id: string) {
+    constructor(public id: string) {
         this.id = id;
         this.position = [0, 0, 0];
 
@@ -52,11 +52,7 @@ export class LightsManager {
         }, []);
     };
 
-    get(index) {
-        if (typeof index === 'string') {
-            return this.list.find(light => light.id === index);
-        } else {
-            return this.list[index];
-        }
+    get(index: string) {
+        return this.list.find(light => light.id === index);
     };
 }

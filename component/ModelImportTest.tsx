@@ -1,16 +1,21 @@
 import fragment_shader from '../shader/testFrag.glsl';
 import vertex_shader from '../shader/testVer.glsl';
 import { useEffect, useRef } from "react";
-import {LightPositions, ModelDataType, ProgramProps} from "../type";
+import {LightPositions, LightPropType, ModelDataType, ProgramProps} from "../type";
 import { Scene } from "../lib/Scene";
 import { Program } from "../lib/Program";
 import { Clock } from "../lib/Clock";
 import { Camera } from "../lib/Camera";
 import { Controls } from "../lib/Controls";
 import { Transforms } from "../lib/Transforms";
-import {Light, LightsManager} from "../lib/Light";
+import { Light, LightsManager } from "../lib/Light";
 
-const ModelImportTest = () => {
+type Props = {
+    data: []
+}
+const ModelImportTest = (props: Props) => {
+    const { data } = props;
+    console.log(data)
     let canvas: HTMLCanvasElement,
         gl: WebGL2RenderingContext,
         program: ProgramProps,
@@ -20,9 +25,10 @@ const ModelImportTest = () => {
         transforms: Transforms,
         lights: LightsManager,
         lightPositions: LightPositions,
+        //canvasの背景色
         clearColor: [number, number, number] = [0.9, 0.9, 0.9],
         modelData: ModelDataType,
-        selectedModel
+        selectedModel: string;
 
     //canvasの設定
     const canvasRef = useRef(null);
@@ -131,7 +137,7 @@ const ModelImportTest = () => {
         transforms.updatePerspective();
 
         try {
-            scene.traverse(object => {
+            scene.traverse((object: LightPropType) => {
                 if (!object.visible) return;
 
                 transforms.calculateModelView();
@@ -140,7 +146,7 @@ const ModelImportTest = () => {
                 transforms.pop();
 
                 //set uniforms
-                gl.uniform1i(program.uWireframe, false);
+                gl.uniform1i(program.uWireframe, 0);
                 gl.uniform3fv(program.uKa, object.Ka);
                 gl.uniform3fv(program.uKd, object.Kd);
                 gl.uniform3fv(program.uKs, object.Ks);
@@ -175,13 +181,10 @@ const ModelImportTest = () => {
         clock.on('tick', draw);
     }
 
-    function initControls() {
-
-    }
-
     useEffect(() => {
         init();
     }, []);
+
     return (
         <>
             <canvas className='webgl-canvas' ref={canvasRef}></canvas>

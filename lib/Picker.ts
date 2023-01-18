@@ -1,5 +1,7 @@
-import { vec4 } from "gl-matrix";
-import { Scene } from "./Scene";
+import {vec3, vec4} from "gl-matrix";
+import {Scene} from "./Scene";
+import {Camera} from "./Camera";
+import {Controls} from "./Controls";
 
 export class Picker {
     private pickedList: any[];
@@ -11,6 +13,8 @@ export class Picker {
     private processHitsCallback: any;
     private addHitCallback: any;
     private removeHitCallback: any;
+    private camera: Camera | undefined;
+    private controls: Controls | undefined;
     constructor(
         private readonly canvas: HTMLCanvasElement,
         private gl: WebGL2RenderingContext,
@@ -83,7 +87,7 @@ export class Picker {
 
         let found = false;
 
-        this.scene?.traverse(obj => {
+        this.scene?.traverse((obj) => {
             if (obj.alias === 'floor') return;
 
             const property: vec4 = this.hitPropertyCallback && this.hitPropertyCallback(obj);
@@ -114,4 +118,40 @@ export class Picker {
         }
         this.pickedList = [];
     };
+
+    // hitProperty(obj) {
+    //     return obj.diffuse
+    // };
+    // addHit(obj) {
+    //     obj.previous = obj.diffuse.slice(0);
+    //     obj.diffuse[3] = 0.5;
+    // };
+    // removeHit(obj) {
+    //     obj.diffuse = obj.previous.slice(0);
+    // };
+    // processHit(hits) {
+    //     hits.forEach(hit => hit.diffuse = hit.previous);
+    // };
+    // movePickedObjects(dx: number, dy: number) {
+    //     const hits = this.getHits();
+    //     if (!hits) return;
+    //     if (!this.camera) return;
+    //     const factor = Math.max(
+    //         Math.max(this.camera.position[0], this.camera.position[1]), this.camera.position[2]
+    //     ) / 2000;
+    //
+    //     hits.forEach(hit => {
+    //         const scaleX = vec3.create();
+    //         const scaleY = vec3.create();
+    //         if (!(this.controls && this.camera)) return;
+    //         if (this.controls.alt) {
+    //             vec3.scale(scaleY, this.camera.normal, dy * factor);
+    //         } else {
+    //             vec3.scale(scaleY, this.camera.up, -dy * factor);
+    //             vec3.scale(scaleX, this.camera.right, dx * factor);
+    //         }
+    //         vec3.add(hit.position, hit.position, scaleY);
+    //         vec3.add(hit.position, hit.position, scaleX);
+    //     });
+    // };
 }

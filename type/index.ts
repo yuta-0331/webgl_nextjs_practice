@@ -1,5 +1,6 @@
 import { vec3 } from "gl-matrix";
 
+//programに配置するプロパティ(uniform, attribute)の型
 export interface ProgramProps extends WebGLProgram {
     aVertexPosition: number;
     aVertexNormal: number;
@@ -37,10 +38,37 @@ export type LightPositions = {
     nearRight: vec3;
 };
 
+//Modelの型指定
 export interface ModelDataType {
     [key: string]: {
         paintAlias: string;
         partsCount: number;
         path: string;
     }
+}
+
+//sceneで使用するLightプロパティの型指定
+export type LightPropType = {
+    diffuse: Array<number>;
+    Kd: Array<number>;
+    ambient: Array<number>;
+    Ka: Array<number>;
+    specular: Array<number>;
+    Ks: Array<number>;
+    specularExponent: number;
+    Ns: number;
+    Ni: number,
+    d: number;
+    transparency: number;
+    illum: number;
+    ibo: WebGLBuffer | null;
+    indices: Array<number>;
+    vao: WebGLVertexArrayObject | null;
+    vertices: Array<number>;
+    scalars: number;
+    textureCoords: Array<number>;
+    image: any;
+    texture: any;
+    wireframe: boolean;
+    visible:boolean;
 }

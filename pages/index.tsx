@@ -1,8 +1,11 @@
 import Head from 'next/head'
 import Canvas from "../component/Canvas";
 import ModelImportTest from "../component/ModelImportTest";
+import path from "path";
+import fsPromises from 'fs/promises'
 
-export default function Home() {
+export default function(props) {
+  const { data } = props;
     return (
     <>
       <Head>
@@ -14,8 +17,18 @@ export default function Home() {
       <main>
         <h1>Hello, Canvas</h1>
         <Canvas />
-        <ModelImportTest/>
+        <ModelImportTest data={props}/>
       </main>
     </>
   )
 }
+
+export const getStaticProps = async () =>{
+  const filePath = path.join(process.cwd(), './model/macbook/part1.json');
+  const data = await fsPromises.readFile(filePath);
+  const objectData = JSON.parse(data);
+
+  return {
+    props: objectData,
+  };
+};
