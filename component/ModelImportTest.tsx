@@ -1,7 +1,7 @@
 import fragment_shader from '../shader/testFrag.glsl';
 import vertex_shader from '../shader/testVer.glsl';
 import { useEffect, useRef } from "react";
-import {LightPositions, LightPropType, ModelDataType, ProgramProps} from "../type";
+import { LightPositions, LightPropType, ModelDataType, ProgramProps } from "../type";
 import { Scene } from "../lib/Scene";
 import { Program } from "../lib/Program";
 import { Clock } from "../lib/Clock";
@@ -10,12 +10,7 @@ import { Controls } from "../lib/Controls";
 import { Transforms } from "../lib/Transforms";
 import { Light, LightsManager } from "../lib/Light";
 
-type Props = {
-    data: []
-}
-const ModelImportTest = (props: Props) => {
-    const { data } = props;
-    console.log(data)
+const ModelImportTest = ({modelObj}) => {
     let canvas: HTMLCanvasElement,
         gl: WebGL2RenderingContext,
         program: ProgramProps,
@@ -77,7 +72,7 @@ const ModelImportTest = (props: Props) => {
         new Controls(camera, canvas);
         transforms = new Transforms(gl, program, camera, canvas);
         lights = new LightsManager();
-        //シーン内の個々のライトのポジション
+        //シーン内の個々のライトのポジションを指定
         lightPositions = {
             farLeft: [-5, 5, -5],
             farRight: [5, 5, -5],
@@ -107,7 +102,7 @@ const ModelImportTest = (props: Props) => {
             'macbook': {
                 paintAlias: 'macbook',
                 partsCount: 6,
-                path: '../model/macbook/part'
+                modelPath: '../model/macbook/part'
             },
         };
     }
@@ -121,8 +116,8 @@ const ModelImportTest = (props: Props) => {
 
     function loadModel(model: string) {
         scene.objects = [];
-        const { path, partsCount, paintAlias } = modelData[model];
-        scene.loadByParts(path, partsCount, paintAlias);
+        const { modelPath, partsCount, paintAlias } = modelData[model];
+        scene.loadObject(modelObj);
         selectedModel = model;
     }
 

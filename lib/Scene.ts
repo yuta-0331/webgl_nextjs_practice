@@ -12,25 +12,32 @@ export class Scene {
         this.gl = gl;
         this.program = program;
         this.objects = []
-    }
-    //非同期でファイルを読み込む
-    load(filename: string, alias: string, attributes: string | null = null) {
-        return fetch(filename)
-            .then(res => res.json())
-            .then(object => {
-                object.visible = true;
-                object.alias = alias || object.alias;
-                this.add(object, attributes);
-            })
-            .catch((err) => console.error(err));
     };
 
-    loadByParts(path: string, count: number, alias: string) {
-        for (let i = 1; i <= count; i++) {
-            const part = `${path}${i}.json`;
-            this.load(part, alias);
-        }
+    loadObject(modelObj) {
+        Object.keys(modelObj).forEach(key => {
+            modelObj[key].visible = true;
+            this.add(modelObj[key])
+        });
     }
+    // //非同期でファイルを読み込む
+    // async load(filename: string, alias: string, attributes: string | null = null) {
+    //     return await fetch(filename)
+    //         .then(res => res.json())
+    //         .then(object => {
+    //             object.visible = true;
+    //             object.alias = alias || object.alias;
+    //             this.add(object, attributes);
+    //         })
+    //         .catch((err) => console.error(err));
+    // };
+    //
+    // loadByParts(path: string, count: number, alias: string) {
+    //     for (let i = 1; i <= count; i++) {
+    //         const part = `${path}${i}.json`;
+    //         this.load(part, alias);
+    //     }
+    // };
 
     add(object: LightPropType, attributes: string | null = null) {
         const { gl, program } = this;

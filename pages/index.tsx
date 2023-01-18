@@ -2,10 +2,10 @@ import Head from 'next/head'
 import Canvas from "../component/Canvas";
 import ModelImportTest from "../component/ModelImportTest";
 import path from "path";
-import fsPromises from 'fs/promises'
+import fsPromises from 'fs/promises';
+import {ModelDataType} from "../type";
 
 export default function(props) {
-  const { data } = props;
     return (
     <>
       <Head>
@@ -17,18 +17,37 @@ export default function(props) {
       <main>
         <h1>Hello, Canvas</h1>
         <Canvas />
-        <ModelImportTest data={props}/>
+        <ModelImportTest modelObj={props}/>
       </main>
     </>
   )
 }
 
+const modelData: ModelDataType = {
+  'macbook': {
+    paintAlias: 'macbook',
+    partsCount: 6,
+    modelPath: '/model/macbook/part'
+  },
+};
 export const getStaticProps = async () =>{
-  const filePath = path.join(process.cwd(), './model/macbook/part1.json');
-  const data = await fsPromises.readFile(filePath);
-  const objectData = JSON.parse(data);
+  const { modelPath, partsCount, paintAlias } = modelData['macbook'];
+  let modelObj: any = {}
+  await loadByParts(modelPath, partsCount, paintAlias);
+
+  async function loadByParts(path: string, count: number, alias: string) {
+    for (let i = 1; i <= count; i++) {
+      const part = `${path}${i}.json`;
+      modelObj[`${path}${i}`] = await JSON.parse(await load(part, alias));
+    }
+  }
+  async function load(filename: string, alias :string, attributes: string | null = null) {
+    const filePath = path.join(process.cwd(), filename);
+    return await fsPromises.readFile(filePath, 'utf-8')
+        .then(res => res.toString())
+  }
 
   return {
-    props: objectData,
+    props: modelObj,
   };
 };

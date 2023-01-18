@@ -1,7 +1,7 @@
-import {vec3, vec4} from "gl-matrix";
-import {Scene} from "./Scene";
-import {Camera} from "./Camera";
-import {Controls} from "./Controls";
+import { vec3, vec4 } from "gl-matrix";
+import { Scene } from "./Scene";
+import { Camera } from "./Camera";
+import { Controls } from "./Controls";
 
 export class Picker {
     private pickedList: any[];

@@ -43,7 +43,7 @@ export interface ModelDataType {
     [key: string]: {
         paintAlias: string;
         partsCount: number;
-        path: string;
+        modelPath: string;
     }
 }
 
