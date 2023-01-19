@@ -1,6 +1,6 @@
 import fragment_shader from '../shader/testFrag.glsl';
 import vertex_shader from '../shader/testVer.glsl';
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     LightPositions,
     ModelDataType,
@@ -15,6 +15,7 @@ import { Controls } from "../lib/Controls";
 import { Transforms } from "../lib/Transforms";
 import { Light, LightsManager } from "../lib/Light";
 import canvas from "./Canvas";
+import TestForHtmlTexture from "./TestForHtmlTexture";
 
 type Props = {
     modelObj: StoringLoadedJsonType;
@@ -76,7 +77,7 @@ const ModelImportTest = (props: Props) => {
             gl, vertex_shader, fragment_shader
         ).initProgram(attributes, uniforms);
 
-        //scene, clock, camera, control, transform, lightの設定
+        //scene, clock, camera, control, transform, light, textureの設定
         scene = new Scene(gl, program);
         clock = new Clock();
         camera = new Camera(Camera.ORBITING_TYPE); //TRACKING_TYPEへの切り替えはここ
@@ -85,17 +86,17 @@ const ModelImportTest = (props: Props) => {
         lights = new LightsManager();
         //シーン内の個々のライトのポジションを指定
         lightPositions = {
-            farLeft: [-5, 5, -5],
-            farRight: [5, 5, -5],
-            nearLeft: [-5, 5, 5],
-            nearRight: [5, 5, 5]
+            farLeft: [-1, 1, -1],
+            farRight: [1, 1, -1],
+            nearLeft: [-1, 1, 1],
+            nearRight: [1, 1, 1]
         };
 
         Object.keys(lightPositions).forEach(key => {
             const light = new Light(key);
             light.setPosition(lightPositions[key as keyof LightPositions]);
-            light.setDiffuse([0.4, 0.4, 0.4, 1]);
-            light.setSpecular([0.8, 0.8, 0.8, 1]);
+            light.setDiffuse([0.4, 0.4, 0.4]);
+            light.setSpecular([0.4, 0.4, 0.4]);
             lights.add(light);
         });
 

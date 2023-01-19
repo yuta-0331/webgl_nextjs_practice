@@ -111,10 +111,10 @@ export class Camera {
         //     this.azimuth = this.azimuth % 360;
         // }
         //カメラ回転量の制御する場合
-        if (this.azimuth > 90) {
-            this.azimuth = 90;
-        } else if (this.azimuth < -20) {
-            this.azimuth = -20;
+        if (this.azimuth > 100) {
+            this.azimuth = 100;
+        } else if (this.azimuth < -10) {
+            this.azimuth = -10;
         }
         this.update();
     };
