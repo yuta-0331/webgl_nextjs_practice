@@ -1,7 +1,12 @@
 import fragment_shader from '../shader/testFrag.glsl';
 import vertex_shader from '../shader/testVer.glsl';
-import { useEffect, useRef } from "react";
-import { LightPositions, LightPropType, ModelDataType, ProgramProps } from "../type";
+import {useEffect, useRef, useState} from "react";
+import {
+    LightPositions,
+    ModelDataType,
+    ModelDetailedDataType,
+    ProgramProps, StoringLoadedJsonType
+} from "../type";
 import { Scene } from "../lib/Scene";
 import { Program } from "../lib/Program";
 import { Clock } from "../lib/Clock";
@@ -9,8 +14,15 @@ import { Camera } from "../lib/Camera";
 import { Controls } from "../lib/Controls";
 import { Transforms } from "../lib/Transforms";
 import { Light, LightsManager } from "../lib/Light";
+import canvas from "./Canvas";
 
-const ModelImportTest = ({modelObj}) => {
+type Props = {
+    modelObj: StoringLoadedJsonType;
+}
+
+const ModelImportTest = (props: Props) => {
+    const { modelObj } = props;
+
     let canvas: HTMLCanvasElement,
         gl: WebGL2RenderingContext,
         program: ProgramProps,
@@ -22,11 +34,10 @@ const ModelImportTest = ({modelObj}) => {
         lightPositions: LightPositions,
         //canvasの背景色
         clearColor: [number, number, number] = [0.9, 0.9, 0.9],
-        modelData: ModelDataType,
-        selectedModel: string;
-
+        modelData: ModelDataType;
+        // selectedModel: string;
     //canvasの設定
-    const canvasRef = useRef(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     function getContext() {
         canvas = canvasRef.current as unknown as HTMLCanvasElement;
         return canvas.getContext('webgl2');
@@ -68,7 +79,7 @@ const ModelImportTest = ({modelObj}) => {
         //scene, clock, camera, control, transform, lightの設定
         scene = new Scene(gl, program);
         clock = new Clock();
-        camera = new Camera(Camera.ORBITING_TYPE);
+        camera = new Camera(Camera.ORBITING_TYPE); //TRACKING_TYPEへの切り替えはここ
         new Controls(camera, canvas);
         transforms = new Transforms(gl, program, camera, canvas);
         lights = new LightsManager();
@@ -87,10 +98,10 @@ const ModelImportTest = ({modelObj}) => {
             light.setSpecular([0.8, 0.8, 0.8, 1]);
             lights.add(light);
         });
-        //lightの設定を自動的に変更できるように修正すること
-        gl.uniform3fv(program.uLightPosition, [1,1,1]);
-        gl.uniform3fv(program.uLd, [1,1,1]);
-        gl.uniform3fv(program.uLs, [1,1,1]);
+
+        gl.uniform3fv(program.uLightPosition, lights.getArray('position'));
+        gl.uniform3fv(program.uLd, lights.getArray('diffuse'));
+        gl.uniform3fv(program.uLs, lights.getArray('specular'));
 
         gl.uniform3fv(program.uKa, [1, 1, 1]);
         gl.uniform3fv(program.uKd, [1, 1, 1]);
@@ -98,13 +109,13 @@ const ModelImportTest = ({modelObj}) => {
         gl.uniform1f(program.uNs, 1);
         gl.uniform1f(program.uNi, 1);
 
-        modelData = {
-            'macbook': {
-                paintAlias: 'macbook',
-                partsCount: 6,
-                modelPath: '../model/macbook/part'
-            },
-        };
+        // modelData = {
+        //     'macbook': {
+        //         paintAlias: 'macbook',
+        //         partsCount: 6,
+        //         modelPath: '../model/macbook/part'
+        //     },
+        // };
     }
 
     function goHome() {
@@ -114,16 +125,15 @@ const ModelImportTest = ({modelObj}) => {
         camera.setElevation(-10);
     }
 
-    function loadModel(model: string) {
+    function loadModel() {
         scene.objects = [];
-        // const { modelPath, partsCount, paintAlias } = modelData[model];
         scene.loadObject(modelObj);
         // selectedModel = model;
     }
 
     function load() {
         goHome();
-        loadModel('macbook');
+        loadModel();
     }
 
     function draw() {
@@ -132,7 +142,7 @@ const ModelImportTest = ({modelObj}) => {
         transforms.updatePerspective();
 
         try {
-            scene.traverse((object: LightPropType) => {
+            scene.traverse((object: ModelDetailedDataType) => {
                 if (!object.visible) return;
 
                 transforms.calculateModelView();
@@ -180,12 +190,31 @@ const ModelImportTest = ({modelObj}) => {
         init();
     }, []);
 
+    //リサイズ時にcanvasサイズ調整
+    const [ canvasSize, setCanvasSize ] = useState({
+        width: 0, height: 0,
+    });
+    useEffect(() => {
+        const handleResize = () => {
+            setCanvasSize({
+                width: window.innerWidth,
+                height: window.innerHeight,
+            })
+        }
+        console.log(canvasSize);
+        window.addEventListener('resize', handleResize);
+        if (canvasRef.current !== null) {
+            canvasRef.current.width = window.innerWidth;
+            canvasRef.current.height = window.innerHeight;
+        }
+    }, [
+        //↓コメントアウト外すと機能するが処理が非常に重い。
+        // canvasSize
+    ]);
     return (
         <>
             <canvas className='webgl-canvas'
                     ref={canvasRef}
-                    width={1200}
-                    height={600}
             ></canvas>
         </>
     );

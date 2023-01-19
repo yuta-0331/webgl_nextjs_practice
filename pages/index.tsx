@@ -2,9 +2,9 @@ import Head from 'next/head'
 import ModelImportTest from "../component/ModelImportTest";
 import path from "path";
 import fsPromises from 'fs/promises';
-import {ModelDataType} from "../type";
+import {　ModelDataType, StoringLoadedJsonType　} from "../type";
 
-export default props => (
+const Home = (props: StoringLoadedJsonType) => (
     <>
       <Head>
         <title>Create Next App</title>
@@ -18,6 +18,8 @@ export default props => (
       </main>
     </>
 )
+
+export default Home;
 
 const modelData: ModelDataType = {
   'macbook': {

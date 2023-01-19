@@ -1,4 +1,4 @@
-import { vec3 } from "gl-matrix";
+import {vec3, vec4} from "gl-matrix";
 
 //programに配置するプロパティ(uniform, attribute)の型
 export interface ProgramProps extends WebGLProgram {
@@ -38,7 +38,7 @@ export type LightPositions = {
     nearRight: vec3;
 };
 
-//Modelの型指定
+//Modelをインポートする際に使用するオブジェクトの型指定
 export interface ModelDataType {
     [key: string]: {
         paintAlias: string;
@@ -48,27 +48,34 @@ export interface ModelDataType {
 }
 
 //sceneで使用するLightプロパティの型指定
-export type LightPropType = {
-    diffuse: Array<number>;
-    Kd: Array<number>;
-    ambient: Array<number>;
-    Ka: Array<number>;
-    specular: Array<number>;
-    Ks: Array<number>;
-    specularExponent: number;
+export type ModelDetailedDataType = {
+    Ka: vec3;
+    Kd: vec3;
+    Ks: vec3;
+    Ni: number;
     Ns: number;
-    Ni: number,
+    alias: string;
+    ambient: vec4;
     d: number;
-    transparency: number;
-    illum: number;
+    diffuse: vec4;
     ibo: WebGLBuffer | null;
+    illum: number;
     indices: Array<number>;
+    specular: vec4;
+    specularExponent: number;
+    transparency: number;
     vao: WebGLVertexArrayObject | null;
     vertices: Array<number>;
+    visible: boolean;
     scalars: number;
     textureCoords: Array<number>;
     image: any;
     texture: any;
     wireframe: boolean;
-    visible:boolean;
+}
+
+
+//読み込んだJSONファイルを格納するオブジェクトの型指定
+export type StoringLoadedJsonType = {
+    [key: string]: ModelDetailedDataType;
 }

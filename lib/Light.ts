@@ -46,7 +46,7 @@ export class LightsManager {
     };
 
     getArray(type: 'position' | 'diffuse' | 'specular' | 'ambient') {
-        return this.list.reduce((result: Array<Light>, light: Light) => {
+        return this.list.reduce((result, light) => {
             result = result.concat(light[type]);
             return result;
         }, []);

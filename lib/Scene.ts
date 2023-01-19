@@ -1,4 +1,4 @@
-import { LightPropType, ProgramProps } from "../type";
+import { ModelDetailedDataType, ProgramProps, StoringLoadedJsonType } from "../type";
 import { Utils } from "./Utils";
 import { Texture } from "./Texture";
 
@@ -14,11 +14,13 @@ export class Scene {
         this.objects = []
     };
 
-    //JSONのデータを受け取る
-    loadObject(modelObj) {
-        Object.keys(modelObj).forEach(key => {
-            modelObj[key].visible = true;
-            this.add(modelObj[key])
+    //parseしたJSONのデータ(object)を受け取る
+    loadObject(storingLoadedJson: StoringLoadedJsonType, alias: string | null = null) {
+        console.log(storingLoadedJson)
+        Object.keys(storingLoadedJson).forEach(key => {
+            storingLoadedJson[key].visible = true;
+            storingLoadedJson[key].alias = alias || storingLoadedJson[key].alias;
+            this.add(storingLoadedJson[key as keyof ModelDetailedDataType])
         });
     }
     // //非同期でファイルを読み込む
@@ -40,7 +42,7 @@ export class Scene {
     //     }
     // };
 
-    add(object: LightPropType, attributes: string | null = null) {
+    add(object: ModelDetailedDataType, attributes: string | null = null) {
         const { gl, program } = this;
         //デフォルト値の設定
         object.diffuse = object.diffuse || [1, 1, 1, 1];

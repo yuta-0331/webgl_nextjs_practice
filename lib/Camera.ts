@@ -106,8 +106,15 @@ export class Camera {
     //カメラの方位の変更
     changeAzimuth(azimuth: number) {
         this.azimuth += azimuth;
-        if(this.azimuth > 360 || this.azimuth < -360) {
-            this.azimuth = this.azimuth % 360;
+        //自由に回転させる場合はこちら
+        // if(this.azimuth > 360 || this.azimuth < -360) {
+        //     this.azimuth = this.azimuth % 360;
+        // }
+        //カメラ回転量の制御する場合
+        if (this.azimuth > 90) {
+            this.azimuth = 90;
+        } else if (this.azimuth < -20) {
+            this.azimuth = -20;
         }
         this.update();
     };

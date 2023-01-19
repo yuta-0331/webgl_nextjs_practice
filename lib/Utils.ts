@@ -1,7 +1,16 @@
 import { ReadonlyVec3, vec3 } from "gl-matrix";
+import {useEffect} from "react";
 
 export class Utils {
-     calculateNormals(vs: Array<number>, ind: Array<number>) {
+    resizeCanvas(canvas: HTMLCanvasElement) {
+        const expandFullScreen = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+        expandFullScreen();
+
+    }
+    calculateNormals(vs: Array<number>, ind: Array<number>) {
         const
             x = 0,
             y = 1,
@@ -112,7 +121,6 @@ export class Utils {
             ts.push(tan[1]);
             ts.push(tan[2]);
         });
-
         return ts;
     }
 }

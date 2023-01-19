@@ -1,3 +1,5 @@
+//pickerに関する部分は一旦保留
+
 import { Camera } from "./Camera";
 import { Picker } from "./Picker";
 
