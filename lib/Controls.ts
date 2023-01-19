@@ -4,7 +4,7 @@ import { Picker } from "./Picker";
 export class Controls {
     private camera: Camera;
     private readonly canvas: HTMLCanvasElement;
-    private picker: Picker | null;
+    // private picker: Picker | null;
     private dragging: boolean;
     private picking: boolean;
     private ctrl: boolean;
@@ -22,7 +22,7 @@ export class Controls {
     constructor(camera: Camera, canvas: HTMLCanvasElement) {
         this.camera = camera;
         this.canvas = canvas;
-        this.picker = null;
+        // this.picker = null;
         this.dragging = false;
         this.picking = false;
         this.ctrl = false;
@@ -45,9 +45,9 @@ export class Controls {
         window.onkeyup = event => this.onKeyUp(event);
     }
 
-    setPicker(picker: Picker) {
-        this.picker = picker;
-    }
+    // setPicker(picker: Picker) {
+    //     this.picker = picker;
+    // }
 
     get2DCords(event: MouseEvent) {
         let top = 0,
@@ -72,10 +72,10 @@ export class Controls {
     onMouseUp(event: MouseEvent) {
         this.dragging = false;
 
-        if (!event.shiftKey && this.picker) {
-            this.picking = false;
-            this.picker.stop();
-        }
+        // if (!event.shiftKey && this.picker) {
+        //     this.picking = false;
+        //     this.picker.stop();
+        // }
     };
 
     onMouseDown(event: MouseEvent) {
@@ -91,17 +91,20 @@ export class Controls {
             this.camera.position[2]
         ) / 100;
 
-        if (!this.picker) return;
+        // if (!this.picker) return;
 
-        const coordinates = this.get2DCords(event);
-        this.picking = this.picker.find(coordinates);
+        // const coordinates = this.get2DCords(event);
+        // this.picking = this.picker.find(coordinates);
 
-        if (!this.picking) this.picker.stop();
+        // if (!this.picking) this.picker.stop();
     };
 
     onMouseMove(event: MouseEvent) {
         this.lastX = this.x;
         this.lastY = this.y;
+
+        this.x = event.clientX;
+        this.y = event.clientY;
 
         if (!this.dragging) return;
 
@@ -111,10 +114,10 @@ export class Controls {
         const dx = this.x - this.lastX;
         const dy = this.y - this.lastY;
 
-        if (this.picking && this.picker?.moveCallback) {
-            this.picker.moveCallback(dx, dy);
-            return;
-        }
+        // if (this.picking && this.picker?.moveCallback) {
+        //     this.picker.moveCallback(dx, dy);
+        //     return;
+        // }
 
         if (!this.button) {
             this.alt

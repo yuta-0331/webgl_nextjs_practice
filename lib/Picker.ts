@@ -87,7 +87,7 @@ export class Picker {
 
         let found = false;
 
-        this.scene?.traverse((obj) => {
+        this.scene?.traverse((obj: any) => {
             if (obj.alias === 'floor') return;
 
             const property: vec4 = this.hitPropertyCallback && this.hitPropertyCallback(obj);

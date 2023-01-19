@@ -116,9 +116,9 @@ const ModelImportTest = ({modelObj}) => {
 
     function loadModel(model: string) {
         scene.objects = [];
-        const { modelPath, partsCount, paintAlias } = modelData[model];
+        // const { modelPath, partsCount, paintAlias } = modelData[model];
         scene.loadObject(modelObj);
-        selectedModel = model;
+        // selectedModel = model;
     }
 
     function load() {

@@ -14,6 +14,7 @@ export class Scene {
         this.objects = []
     };
 
+    //JSONのデータを受け取る
     loadObject(modelObj) {
         Object.keys(modelObj).forEach(key => {
             modelObj[key].visible = true;
