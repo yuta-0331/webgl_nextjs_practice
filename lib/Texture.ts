@@ -3,7 +3,7 @@ export class Texture {
             image: HTMLImageElement;
     constructor(
         private gl: WebGL2RenderingContext,
-        private source: any,
+        private source: string,
     ) {
         this.gl = gl;
         this.glTexture = gl.createTexture();
@@ -16,8 +16,8 @@ export class Texture {
         }
     };
 
-    setImage(source: any) {
-        this.image = source
+    setImage(source: string) {
+        this.image.src = source
     };
 
     handleLoadedTexture() {
