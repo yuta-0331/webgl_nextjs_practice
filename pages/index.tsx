@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import ModelImportTest from "../component/ModelImportTest";
+import ModelImportTest from "../components/ModelImportTest";
 import path from "path";
 import fsPromises from 'fs/promises';
 import {　ModelDataType, StoringLoadedJsonType　} from "../type";
