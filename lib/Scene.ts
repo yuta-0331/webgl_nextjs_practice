@@ -16,7 +16,6 @@ export class Scene {
 
     //parseしたJSONのデータ(object)を受け取る
     loadObject(storingLoadedJson: StoringLoadedJsonType, alias: string | null = null) {
-        console.log(storingLoadedJson)
         Object.keys(storingLoadedJson).forEach(key => {
             storingLoadedJson[key].visible = true;
             storingLoadedJson[key].alias = alias || storingLoadedJson[key].alias;

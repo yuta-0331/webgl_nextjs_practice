@@ -3,7 +3,6 @@ import vertex_shader from '../shader/testVer.glsl';
 import { useEffect, useRef, useState } from "react";
 import {
     LightPositions,
-    ModelDataType,
     ModelDetailedDataType,
     ProgramProps, StoringLoadedJsonType
 } from "../type";
@@ -15,13 +14,12 @@ import { Controls } from "../lib/Controls";
 import { Transforms } from "../lib/Transforms";
 import { Light, LightsManager } from "../lib/Light";
 import canvas from "./Canvas";
-import TestForHtmlTexture from "./TestForHtmlTexture";
 
 type Props = {
     modelObj: StoringLoadedJsonType;
 }
 
-const ModelImportTest = (props: Props) => {
+const ImportModel = (props: Props) => {
     const { modelObj } = props;
 
     let canvas: HTMLCanvasElement,
@@ -34,19 +32,19 @@ const ModelImportTest = (props: Props) => {
         lights: LightsManager,
         lightPositions: LightPositions,
         //canvasの背景色
-        clearColor: [number, number, number] = [0.9, 0.9, 0.9],
-        modelData: ModelDataType;
+        clearColor: [number, number, number] = [0, 0, 0];
         // selectedModel: string;
+
     //canvasの設定
     const canvasRef = useRef<HTMLCanvasElement>(null);
     function getContext() {
-        canvas = canvasRef.current as unknown as HTMLCanvasElement;
+        canvas = canvasRef.current as HTMLCanvasElement;
         return canvas.getContext('webgl2');
     }
 
     function configure() {
         gl = getContext() as WebGL2RenderingContext;
-        gl.clearColor(...clearColor, 1);
+        gl.clearColor(...clearColor, 0);
         gl.clearDepth(1);
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LEQUAL);
@@ -100,23 +98,15 @@ const ModelImportTest = (props: Props) => {
             lights.add(light);
         });
 
-        gl.uniform3fv(program.uLightPosition, lights.getArray('position'));
-        gl.uniform3fv(program.uLd, lights.getArray('diffuse'));
-        gl.uniform3fv(program.uLs, lights.getArray('specular'));
+        gl.uniform3fv(program.uLightPosition, lights.getArray('position')　as Iterable<number>);
+        gl.uniform3fv(program.uLd, lights.getArray('diffuse')　as Iterable<number>);
+        gl.uniform3fv(program.uLs, lights.getArray('specular')　as Iterable<number>);
 
         gl.uniform3fv(program.uKa, [1, 1, 1]);
         gl.uniform3fv(program.uKd, [1, 1, 1]);
         gl.uniform3fv(program.uKs, [1, 1, 1]);
         gl.uniform1f(program.uNs, 1);
         gl.uniform1f(program.uNi, 1);
-
-        // modelData = {
-        //     'macbook': {
-        //         paintAlias: 'macbook',
-        //         partsCount: 6,
-        //         modelPath: '../model/macbook/part'
-        //     },
-        // };
     }
 
     function goHome() {
@@ -145,7 +135,7 @@ const ModelImportTest = (props: Props) => {
         try {
             scene.traverse((object: ModelDetailedDataType) => {
                 if (!object.visible) return;
-
+                if (object.alias === "BG_Cube.006_BG") return;
                 transforms.calculateModelView();
                 transforms.push();
                 transforms.setMatrixUniforms();
@@ -202,7 +192,6 @@ const ModelImportTest = (props: Props) => {
                 height: window.innerHeight,
             })
         }
-        console.log(canvasSize);
         window.addEventListener('resize', handleResize);
         if (canvasRef.current !== null) {
             canvasRef.current.width = window.innerWidth;
@@ -214,11 +203,12 @@ const ModelImportTest = (props: Props) => {
     ]);
     return (
         <>
-            <canvas className='webgl-canvas'
-                    ref={canvasRef}
+            <canvas
+                className='webgl-canvas relative'
+                ref={canvasRef}
             ></canvas>
         </>
     );
 };
 
-export default ModelImportTest;
+export default ImportModel;

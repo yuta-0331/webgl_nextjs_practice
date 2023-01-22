@@ -1,8 +1,9 @@
 import Head from 'next/head'
-import ModelImportTest from "../components/ModelImportTest";
+import ImportModel from "../components/ImportModel";
 import path from "path";
 import fsPromises from 'fs/promises';
 import {　ModelDataType, StoringLoadedJsonType　} from "../type";
+import ProfileArea from "../components/ProfileArea";
 
 const Home = (props: StoringLoadedJsonType) => (
     <>
@@ -13,8 +14,11 @@ const Home = (props: StoringLoadedJsonType) => (
         <link rel="icon" href="/favicon.ico"/>
       </Head>
       <main>
-        <h1>Hello Canvas</h1>
-        <ModelImportTest modelObj={props}/>
+        <div className='w-screen h-screen bg-indigo-100'>
+          <ImportModel modelObj={props}/>
+          <ProfileArea />
+        </div>
+
       </main>
     </>
 )

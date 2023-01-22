@@ -30,13 +30,12 @@ export class Light {
         this.specular = specular.slice(0) as vec3;
     };
 
-    setProperty(property, value) {
+    setProperty(property: "position" | "ambient" | "diffuse" | "specular", value: vec3) {
         this[property] = value;
     };
 }
-type LightProps = {
-    key: 'position' | 'diffuse' | 'specular' | 'ambient'
-}
+type LightProps = 'position' | 'diffuse' | 'specular' | 'ambient';
+
 export class LightsManager {
     private readonly list: Array<Light>;
     constructor() {
@@ -48,10 +47,10 @@ export class LightsManager {
     };
 
     getArray(type: 'position' | 'diffuse' | 'specular' | 'ambient') {
-        return this.list.reduce((result, light: Light) => {
+        return this.list.reduce((result: Array<vec3>, light: Light) => {
             result = result.concat(light[type]);
             return result;
-        }, []);
+        }, [] as Array<vec3>);
     };
 
     get(index: string) {
