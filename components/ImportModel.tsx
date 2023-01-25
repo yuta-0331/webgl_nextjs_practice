@@ -132,6 +132,7 @@ const ImportModel = (props: Props) => {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         transforms.updatePerspective();
 
+
         try {
             scene.traverse((object: ModelDetailedDataType) => {
                 if (!object.visible) return;

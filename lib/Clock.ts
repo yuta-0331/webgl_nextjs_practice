@@ -1,13 +1,16 @@
-import {EventEmitter} from "./EventEmitter";
+import { EventEmitter } from "./EventEmitter";
 
 export class Clock extends EventEmitter{
     private isRunning: boolean;
+    private lastFlameTime: number;
     constructor() {
         super();
         this.isRunning = true;
 
         this.tick = this.tick.bind(this);
         this.tick();
+
+        this.lastFlameTime = Date.now();
 
         window.onblur = () => {
             this.stop();
@@ -29,5 +32,12 @@ export class Clock extends EventEmitter{
     };
     stop() {
         this.isRunning = false;
+    };
+
+    getDelta() {
+        const currentTime = Date.now();
+        const deltaTime = currentTime - this.lastFlameTime;
+        this.lastFlameTime = currentTime;
+        return deltaTime;
     }
 }

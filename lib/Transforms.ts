@@ -1,5 +1,5 @@
 import { Camera } from "./Camera";
-import { mat4 } from "gl-matrix";
+import {mat4, vec3} from "gl-matrix";
 import { ProgramProps } from "../type";
 
 export class Transforms {
@@ -67,4 +67,9 @@ export class Transforms {
             ? this.modelViewMatrix = this.stack.pop() as mat4
             : null;
     };
+    rotate(angle: number, axis: vec3) {
+        this.push();
+        mat4.rotate(this.modelViewMatrix, this.modelViewMatrix, angle, axis);
+    };
+
 }
