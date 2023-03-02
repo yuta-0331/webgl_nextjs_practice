@@ -32,7 +32,7 @@ const modelData: ModelDataType = {
     modelPath: '/model/room/part'
   },
 };
-export const getServerSideProps = async () =>{
+export const getStaticProps = async () =>{
   const { modelPath, partsCount, paintAlias } = modelData['macbook'];
   let modelObj: any = {}
   await loadByParts(modelPath, partsCount, paintAlias);
