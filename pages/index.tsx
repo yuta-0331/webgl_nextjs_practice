@@ -16,7 +16,6 @@ const Home = (props: StoringLoadedJsonType) => (
       <main>
         <div className='w-screen h-screen bg-indigo-100'>
           <ImportModel modelObj={props}/>
-          <ProfileArea />
         </div>
 
       </main>
@@ -46,7 +45,7 @@ export const getStaticProps = async () =>{
   async function load(filename: string, alias :string, attributes: string | null = null) {
     const filePath = path.join(process.cwd(), filename);
     return await fsPromises.readFile(filePath, 'utf-8')
-        .then(res => res.toString())
+        .then(_ => _.toString())
   }
 
   return {
